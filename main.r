@@ -1,4 +1,5 @@
 #TODO nomenclatura omogenea
+#TODO output anche codice paziente (sort)
 
 Sys.setenv(LANG = "en")
 
@@ -10,7 +11,7 @@ source("./src/clustering/spectral_clustering.r")
 library(gsubfn)
 
 message("Loading data")
-list[features, times, responses] <- load_data()
+list[features, times, responses] <- load_data_post()
 
 message("Preprocessing data")
 list[features, times, responses, frequencies, atrisk, tied] <- do_preprocessing(features, times, responses)
