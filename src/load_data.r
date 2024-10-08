@@ -1,59 +1,61 @@
-source("./src/preprocessing/standardize.r")
-
 library("readxl")
 
-#TODO non mischiare funzionalità logiche
+source("./src/utils/features.r")
 
-#TODO rimuovere
-load_data_s2gc <- function() {
-    data1 <- as.matrix(read.csv("./data/BREAST_Gene_Expression.csv"))
-    data2 <- as.matrix(read.csv("./data/BREAST_Methy_Expression.csv"))
-    data3 <- as.matrix(read.csv("./data/BREAST_Mirna_Expression.csv"))
-    
-    data1 <- standardize_matrix(matrix(as.double(t(data1[, -1])), nrow = 105))
-    data1 <- standardize_columns(data1)
-    data2 <- standardize_matrix(matrix(as.double(t(data2[, -1])), nrow = 105))
-    data2 <- standardize_columns(data2)
-    data3 <- standardize_matrix(matrix(as.double(t(data3[, -1])), nrow = 105))
-    data3 <- standardize_columns(data3)
+rename <- function(df, names, prefix = "") {
+    for (i in 1:dim(df)[2]) {
+        name <- colnames(df)[i]
+        new_name <- paste0(prefix, names[name])
+        colnames(df)[i] <- new_name
+    }
 
-    features <- cbind(data1, data2, data3)
-
-    y_data <- read.csv("./data/BREAST_Survival.csv")
-    times <- as.matrix(y_data["Survival"])
-    responses <- as.matrix(y_data["Death"])
-
-    return(list(features = features, times = times, responses = responses))
+    return(df)
 }
 
-load_data_pre <- function() {
-    data <- read_excel("../../Data/V2/2 - Selected features/1 - Pre-chemo.xlsx")
-    radiomics <- as.matrix(data[, -1])
+load_data <- function() {
+    radiomics_pre <- read_excel("../Data/V2/2 - Selected features/1 - Pre-chemo.xlsx")
+    radiomics_pre <- rename(radiomics_pre[, -1], names.radiomics, "A")
+    radiomics_pre <- as.matrix(radiomics_pre)
 
-    radiomics <- standardize_matrix(matrix(as.double(radiomics), nrow = 99))
-    radiomics <- standardize_columns(radiomics)
+    radiomics_post <- read_excel("../Data/V2/2 - Selected features/2 - Post-chemo.xlsx")
+    radiomics_post <- rename(radiomics_post[, -1], names.radiomics, "B")
+    radiomics_post <- as.matrix(radiomics_post)
 
-    times_data <- read_excel("../../Data/V2/1 - Cleaned/5 - Times.xlsx")
-    survival_data <- read_excel("../../Data/V2/1 - Cleaned/6 - DFS.xlsx")
+    pre_operative <- read_excel("../Data/V2/1 - Cleaned/3 - Pre operative.xlsx")
+    pre_operative <- rename(pre_operative[, -1], names.pre_operative)
+    pre_operative <- as.matrix(pre_operative)
 
-    responses <- as.matrix(survival_data["Recidiva (0/1)"])
-    times <- as.matrix(times_data["Delta pre post"] + times_data["Delta post surgery"] + survival_data["DFS"])
+    surgery <- read_excel("../Data/V2/1 - Cleaned/4 - Surgery.xlsx")
+    surgery <- rename(surgery[, -1], names.surgery)
+    surgery <- as.matrix(surgery)
 
-    return(list(features = radiomics, times = times, responses = responses))
-}
+    times <- read_excel("../Data/V2/1 - Cleaned/5 - Times.xlsx")
+    dfs <- read_excel("../Data/V2/1 - Cleaned/6 - DFS.xlsx")
+    os <- read_excel("../Data/V2/1 - Cleaned/7 - OS.xlsx")
 
-load_data_post <- function() {
-    data <- read_excel("../../Data/V2/2 - Selected features/2 - Post-chemo.xlsx")
-    radiomics <- as.matrix(data[, -1])
+    relapse_status <- as.matrix(dfs["Recidiva (0/1)"])
+    dead_status <- as.matrix(os["Morto =1"])
 
-    radiomics <- standardize_matrix(matrix(as.double(radiomics), nrow = 99))
-    radiomics <- standardize_columns(radiomics)
+    relapse_times <- as.matrix((times["Delta pre post"] + times["Delta post surgery"] + dfs["DFS"]) / 12)
+    dimnames(relapse_times) <- list(NULL, names.relapse_time)
+    dead_times <- as.matrix((times["Delta pre post"] + times["Delta post surgery"] + os["OS"]) / 12)
+    dimnames(dead_times) <- list(NULL, names.dead_time)
 
-    times_data <- read_excel("../../Data/V2/1 - Cleaned/5 - Times.xlsx")
-    survival_data <- read_excel("../../Data/V2/1 - Cleaned/6 - DFS.xlsx")
+    post_times <- as.matrix((times["Delta pre post"]) / 12)
+    dimnames(post_times) <- list(NULL, names.post_time)
+    surgery_times <- as.matrix((times["Delta pre post"] + times["Delta post surgery"]) / 12)
+    dimnames(surgery_times) <- list(NULL, names.surgery_time)
 
-    responses <- as.matrix(survival_data["Recidiva (0/1)"])
-    times <- as.matrix(times_data["Delta post surgery"] + survival_data["DFS"])
-
-    return(list(features = radiomics, times = times, responses = responses))
+    return(list(
+        radiomics_pre = radiomics_pre, 
+        radiomics_post = radiomics_post,
+        pre_operative = pre_operative,
+        surgery = surgery,
+        relapse_status = relapse_status,
+        dead_status = dead_status,
+        relapse_times = relapse_times,
+        dead_times = dead_times,
+        post_times = post_times,
+        surgery_times = surgery_times)
+    )
 }

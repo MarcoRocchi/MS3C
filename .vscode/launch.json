@@ -6,11 +6,19 @@
     "configurations": [
         {
             "type": "R-Debugger",
-            "name": "Main",
+            "name": "Clustering",
             "request": "launch",
             "debugMode": "file",
             "workingDirectory": "${workspaceFolder}",
-            "file": "main.r"
+            "file": "clustering.r"
+        },
+        {
+            "type": "R-Debugger",
+            "name": "MSMs",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "msm.r"
         },
         {
             "type": "R-Debugger",

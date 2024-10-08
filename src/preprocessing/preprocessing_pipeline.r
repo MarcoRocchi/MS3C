@@ -4,6 +4,7 @@ source("./src/preprocessing/compute_frequencies.r")
 source("./src/preprocessing/compute_atrisk.r")
 source("./src/preprocessing/compute_tied.r")
 
+#TODO remove
 do_preprocessing <- function(features, times, responses) {
     #features <- standardize_matrix(features)
     #features <- standardize_columns(features)
@@ -21,4 +22,23 @@ do_preprocessing <- function(features, times, responses) {
             tied = tied
         )
     )
+}
+
+preprocess <- function(features) {
+    features <- standardize_matrix(features)
+    features <- standardize_columns(features)
+
+    return(features)
+}
+
+preprocess_pre_operative <- function(features) {
+    age <- features[, 2]
+    age <- standardize_columns(age)
+    features[, 2] <- age
+
+    mtx <- features[, 4]
+    mtx <- standardize_columns(mtx)
+    features[, 4] <- mtx
+    
+    return(features)
 }
