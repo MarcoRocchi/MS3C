@@ -32,13 +32,13 @@ preprocess <- function(features) {
 }
 
 preprocess_pre_operative <- function(features) {
-    age <- features[, 2]
+    age <- features[, 1]
     age <- standardize_columns(age)
-    features[, 2] <- age
+    features[, 1] <- age
 
-    mtx <- features[, 4]
+    mtx <- features[, 2]
     mtx <- standardize_columns(mtx)
-    features[, 4] <- mtx
-    
+    features[, 2] <- mtx
+
     return(features)
 }

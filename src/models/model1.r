@@ -7,7 +7,7 @@ build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {
 
     in_state <- 1
 
-    data <- cbind(pre, post, preop, dead_status, post_times, dead_times, in_state)
+    data <- cbind(pre, preop, dead_status, post_times, dead_times, in_state)
 
     tmat <- transMat(x = list(c(2), c(3), c()), names = c("Pre", "Post", "Dead"))
 
@@ -22,7 +22,7 @@ build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {
     data_long[data_long$trans == 2, names.radiomics] <- post
 
     data_long <- expand.covs(data_long, 
-                            names.radiomics, 
+                            c(names.radiomics, names.pre_operative), 
                             append = TRUE,
                             longnames = FALSE)
 
@@ -33,10 +33,14 @@ build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {
         AO.1 + AP.1 + AQ.1 + AR.1 + AS.1 + AT.1 + AU.1 + AV.1 + AW.1 + AX.1 + AY.1 + AZ.1 + BA.1 +
         AA.2 + AB.2 + AC.2 + AD.2 + AE.2 + AF.2 + AG.2 + AH.2 + AI.2 + AJ.2 + AK.2 + AL.2 + AM.2 + AN.2 +
         AO.2 + AP.2 + AQ.2 + AR.2 + AS.2 + AT.2 + AU.2 + AV.2 + AW.2 + AX.2 + AY.2 + AZ.2 + BA.2 +
-        CA + CB + CC + CD + CE,
+        CA.1 + CB.1 + CC.1 + CD.1 + CE.1 + CF.1 + CG.1 + CH.1 +
+        CA.2 + CB.2 + CC.2 + CD.2 + CE.2 + CF.2 + CG.2 + CH.2 +
+        strata(trans),
         data = data_long
     )
     
+    print(cox.zph(model))
+
     print(summary(model))
 
     return(model)

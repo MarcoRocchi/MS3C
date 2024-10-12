@@ -29,17 +29,23 @@ names.radiomics <- c(
 )
 
 names.pre_operative <- c(
-    "SEX" = "CA",
-    "AGE" = "CB",
-    "Sinc 1/Meta 2" = "CC",
-    "N mtx" = "CD",
-    "Malattia extrahep sinc fegato (0/1)" = "CE"
+    "AGE" = "CA",
+    "N mtx" = "CB",
+    "M" = "CC",
+    "F" = "CD",
+    "synchronous" = "CE",
+    "metachronous" = "CF",
+    "sì" = "CG",
+    "no" = "CH"
 )
 
 names.surgery <- c(
-    "Morb severa" = "DA",
-    "Infective morbidity (0/1)" = "DB",
-    "r0 = Margine almeno 1 mm" = "DC"
+    "morb severa sì" = "DA",
+    "morb severa no" = "DB",
+    "Infective morbidity sì" = "DC",
+    "Infective morbidity no" = "DD",
+    "r0 = Margine almeno 1 mm sì" = "DE",
+    "r0 = Margine almeno 1 mm no" = "DF"
 )
 
 names.relapse_indicator <- "Recidiva (0/1)"

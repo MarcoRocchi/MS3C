@@ -2,7 +2,7 @@ library("mstate")
 
 source("./src/utils/features.r")
 
-build_m5 <- function(pre, 
+build_m7 <- function(pre, 
                     post, 
                     preop, 
                     surgery,
@@ -13,7 +13,7 @@ build_m5 <- function(pre,
                     relapse_times, 
                     dead_times) {
     
-    cat("Building model 5: Pre chemo -> Post chemo -> Surgery -> Relapse -> Dead\n")
+    cat("Building model 7: Pre chemo -> Post chemo -> Surgery -> Relapse -> Dead with competing risk\n")
 
     in_state <- 1
 
@@ -29,7 +29,7 @@ build_m5 <- function(pre,
                 dead_times,
                 in_state)
 
-    tmat <- transMat(x = list(c(2), c(3), c(4), c(5), c()), names = c("Pre", "Post", "Surgery", "Relapse", "Dead"))
+    tmat <- transMat(x = list(c(2), c(3), c(4, 5), c(5), c()), names = c("Pre", "Post", "Surgery", "Relapse", "Dead"))
 
     print(tmat)
 
@@ -58,7 +58,10 @@ build_m5 <- function(pre,
         CA.2 + CB.2 + CC.2 + CD.2 + CE.2 + CF.2 + CG.2 + CH.2 +
         CA.3 + CB.3 + CC.3 + CD.3 + CE.3 + CF.3 + CG.3 + CH.3 +
         CA.4 + CB.4 + CC.4 + CD.4 + CE.4 + CF.4 + CG.4 + CH.4 +
-        DA.3 + DB.3 + DC.3 + DD.3 + DE.3 + DF.3 + DA.4 + DB.4 + DC.4 + DD.4 + DE.4 + DF.4 +
+        CA.5 + CB.5 + CC.5 + CD.5 + CE.5 + CF.5 + CG.5 + CH.5 +
+        DA.3 + DB.3 + DC.3 + DD.3 + DE.3 + DF.3 + 
+        DA.4 + DB.4 + DC.4 + DD.4 + DE.4 + DF.4 +
+        DA.5 + DB.5 + DC.5 + DD.5 + DE.5 + DF.5 +
         strata(trans),
         data = data_long)
     
