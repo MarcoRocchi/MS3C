@@ -33,6 +33,7 @@ msm <- build_m6(
 )
 
 dataset$radiomics_pre <- subset(dataset$radiomics_pre, select = -c(AH, AI))
+dataset$radiomics_post <- subset(dataset$radiomics_post, select = -c(AH, AI))
 coefs <- msm$coefficients[1:25]
 
 list[features, times, responses, frequencies, atrisk, tied] <- 
@@ -44,10 +45,10 @@ eta <- 0.1
 tau <- 10
 
 message("Building similarity graph")
-result <- build_graph(features, frequencies, responses, atrisk, lambda, eta, tau, coefs)
+result <- build_graph(features, frequencies, responses, atrisk, lambda, eta, tau)
 
 #TODO grid search
-optimal_clusters_number <- 4
+optimal_clusters_number <- 2
 message("Performing spectral clustering")
 clusters <- spectral_clustering(result$s, optimal_clusters_number)
 

@@ -78,5 +78,7 @@ build_graph <- function(radiomics, freq, cens, atrisk, lambda, eta, tau, w_init)
         t <- 0.5 * (1 + sqrt(1 + 4 * t^2))
     }
 
+    #plot(eigen(graph$L)$values)
+
     return(list(wzp = wzp, funcval = funcVal, s = graph$SS))
 }
