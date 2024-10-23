@@ -24,6 +24,25 @@ do_preprocessing <- function(features, times, responses) {
     )
 }
 
+do_preprocessing_s2gc <- function(features, times, responses) {
+    features <- standardize_matrix(as.matrix(features))
+    features <- standardize_columns(as.matrix(features))
+    list[features, times, responses] <- sort_times(features, times, responses)
+    frequencies <- compute_frequencies(features)
+    atrisk <- compute_atrisk(times)
+    tied <- compute_tied(times)
+
+    return(list(
+            features = features,
+            times = times,
+            responses = responses,
+            frequencies = frequencies,
+            atrisk = atrisk,
+            tied = tied
+        )
+    )
+}
+
 preprocess <- function(features) {
     features <- standardize_matrix(features)
     features <- standardize_columns(features)

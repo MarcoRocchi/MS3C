@@ -48,7 +48,7 @@ build_m6 <- function(pre, post, preop, relapse_status, dead_status, post_times, 
         strata(trans),
         data = data_long)
 
-    print(cox.zph(model))
+    #print(cox.zph(model))
 
     print(summary(model))
 

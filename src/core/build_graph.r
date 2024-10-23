@@ -5,10 +5,15 @@ source("./src/core/l2_distance.r")
 
 library(fastmatrix)
 
-build_graph <- function(radiomics, freq, cens, atrisk, lambda, eta, tau) {
+build_graph <- function(radiomics, freq, cens, atrisk, lambda, eta, tau, w_init) {
     features_count <- ncol(radiomics)
 
-    wz <- matrix(0, features_count, 1)
+    if (missing(w_init)) {
+        wz <- matrix(0, features_count, 1)
+    } else {
+        wz <- unname(w_init)
+    }
+    
     wz_old <- wz
 
     t <- 1
@@ -21,6 +26,7 @@ build_graph <- function(radiomics, freq, cens, atrisk, lambda, eta, tau) {
 
     max_iterations <- 100
 
+    #TODO
     funcVal <- as.numeric(list(0, 0))
 
     while (!((iterations > max_iterations) || (iterations > (max_iterations / 2) &&
