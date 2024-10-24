@@ -37,7 +37,7 @@ dataset$radiomics_post <- subset(dataset$radiomics_post, select = -c(AH, AI))
 coefs <- msm$coefficients[1:25]
 
 list[features, times, responses, frequencies, atrisk, tied] <- 
-    do_preprocessing_s2gc(dataset$radiomics_pre, dataset$relapse_times, dataset$relapse_status)
+    do_preprocessing(dataset$radiomics_pre, dataset$relapse_times, dataset$relapse_status)
 
 #TODO grid search
 lambda <- 1
@@ -45,7 +45,7 @@ eta <- 0.1
 tau <- 10
 
 message("Building similarity graph")
-result <- build_graph(features, frequencies, responses, atrisk, lambda, eta, tau)
+result <- build_graph(features, frequencies, responses, atrisk, lambda, eta, tau, coefs)
 
 #TODO grid search
 optimal_clusters_number <- 2
