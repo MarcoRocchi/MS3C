@@ -7,7 +7,7 @@ build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {
 
     in_state <- 1
 
-    data <- cbind(pre, preop, dead_status, post_times, dead_times, in_state)
+    data <- cbind(pre, post, preop, dead_status, post_times, dead_times, in_state)
 
     tmat <- transMat(x = list(c(2), c(3), c()), names = c("Pre", "Post", "Dead"))
 
@@ -17,22 +17,20 @@ build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {
                         status = c(NA, "in_state", names.dead_indicator),
                         data = data,
                         trans = tmat,
-                        keep = c(names.radiomics, names.pre_operative))
-
-    data_long[data_long$trans == 2, names.radiomics] <- post
+                        keep = c(names.radiomics_pre, names.radiomics_post, names.pre_operative))
 
     data_long <- expand.covs(data_long, 
-                            c(names.radiomics, names.pre_operative), 
+                            c(names.radiomics_pre, names.radiomics_post, names.pre_operative), 
                             append = TRUE,
                             longnames = FALSE)
 
     print(events(data_long))
 
     model <- coxph(Surv(Tstart, Tstop, status) ~
-        AA.1 + AB.1 + AC.1 + AD.1 + AE.1 + AF.1 + AG.1 + AH.1 + AI.1 + AJ.1 + AK.1 + AL.1 + AM.1 + AN.1 +
-        AO.1 + AP.1 + AQ.1 + AR.1 + AS.1 + AT.1 + AU.1 + AV.1 + AW.1 + AX.1 + AY.1 + AZ.1 + BA.1 +
-        AA.2 + AB.2 + AC.2 + AD.2 + AE.2 + AF.2 + AG.2 + AH.2 + AI.2 + AJ.2 + AK.2 + AL.2 + AM.2 + AN.2 +
-        AO.2 + AP.2 + AQ.2 + AR.2 + AS.2 + AT.2 + AU.2 + AV.2 + AW.2 + AX.2 + AY.2 + AZ.2 + BA.2 +
+        AAA.1 + AAB.1 + AAC.1 + AAD.1 + AAE.1 + AAF.1 + AAG.1 + AAH.1 + AAI.1 + AAJ.1 + AAK.1 + AAL.1 + AAM.1 + AAN.1 +
+        AAO.1 + AAP.1 + AAQ.1 + AAR.1 + AAS.1 + AAT.1 + AAU.1 + AAV.1 + AAW.1 + AAX.1 + AAY.1 + AAZ.1 + ABA.1 +
+        BAA.2 + BAB.2 + BAC.2 + BAD.2 + BAE.2 + BAF.2 + BAG.2 + BAH.2 + BAI.2 + BAJ.2 + BAK.2 + BAL.2 + BAM.2 + BAN.2 +
+        BAO.2 + BAP.2 + BAQ.2 + BAR.2 + BAS.2 + BAT.2 + BAU.2 + BAV.2 + BAW.2 + BAX.2 + BAY.2 + BAZ.2 + BBA.2 +
         CA.1 + CB.1 + CC.1 + CD.1 + CE.1 + CF.1 + CG.1 + CH.1 +
         CA.2 + CB.2 + CC.2 + CD.2 + CE.2 + CF.2 + CG.2 + CH.2 +
         strata(trans),

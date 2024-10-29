@@ -14,11 +14,11 @@ rename <- function(df, names, prefix = "") {
 
 load_data <- function() {
     radiomics_pre <- read_excel("../Data/V2/2 - Selected features/1 - Pre-chemo.xlsx")
-    radiomics_pre <- rename(radiomics_pre[, -1], names.radiomics, "")
+    radiomics_pre <- rename(radiomics_pre[, -1], names.radiomics_pre, "")
     radiomics_pre <- as.matrix(radiomics_pre)
 
     radiomics_post <- read_excel("../Data/V2/2 - Selected features/2 - Post-chemo.xlsx")
-    radiomics_post <- rename(radiomics_post[, -1], names.radiomics, "")
+    radiomics_post <- rename(radiomics_post[, -1], names.radiomics_post, "")
     radiomics_post <- as.matrix(radiomics_post)
 
     pre_operative <- read_excel("../Data/V2/1 - Cleaned/3 - Pre operative.xlsx")

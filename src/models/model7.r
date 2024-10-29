@@ -19,6 +19,7 @@ build_m7 <- function(pre,
 
     data <- cbind(
                 pre,
+                post,
                 preop, 
                 surgery, 
                 relapse_status, 
@@ -37,23 +38,27 @@ build_m7 <- function(pre,
                     status = c(NA, "in_state", "in_state", names.relapse_indicator, names.dead_indicator),
                     data = data,
                     trans = tmat,
-                    keep = c(names.radiomics, names.pre_operative, names.surgery)
+                    keep = c(names.radiomics_pre, names.radiomics_post, names.pre_operative, names.surgery)
                 )
 
-    data_long[data_long$trans == 2, names.radiomics] <- post
-
     data_long <- expand.covs(data_long, 
-                            c(names.radiomics, names.pre_operative, names.surgery), 
+                            c(names.radiomics_pre, names.radiomics_post, names.pre_operative, names.surgery), 
                             append = TRUE,
                             longnames = FALSE)
 
     print(events(data_long))
 
     model <- coxph(Surv(Tstart, Tstop, status) ~
-        AA.1 + AB.1 + AC.1 + AD.1 + AE.1 + AF.1 + AG.1 + AH.1 + AI.1 + AJ.1 + AK.1 + AL.1 + AM.1 + AN.1 +
-        AO.1 + AP.1 + AQ.1 + AR.1 + AS.1 + AT.1 + AU.1 + AV.1 + AW.1 + AX.1 + AY.1 + AZ.1 + BA.1 +
-        AA.2 + AB.2 + AC.2 + AD.2 + AE.2 + AF.2 + AG.2 + AH.2 + AI.2 + AJ.2 + AK.2 + AL.2 + AM.2 + AN.2 +
-        AO.2 + AP.2 + AQ.2 + AR.2 + AS.2 + AT.2 + AU.2 + AV.2 + AW.2 + AX.2 + AY.2 + AZ.2 + BA.2 +
+        AAA.1 + AAB.1 + AAC.1 + AAD.1 + AAE.1 + AAF.1 + AAG.1 + AAH.1 + AAI.1 + AAJ.1 + AAK.1 + AAL.1 + AAM.1 + AAN.1 +
+        AAO.1 + AAP.1 + AAQ.1 + AAR.1 + AAS.1 + AAT.1 + AAU.1 + AAV.1 + AAW.1 + AAX.1 + AAY.1 + AAZ.1 + BAA.1 +
+        BAA.2 + BAB.2 + BAC.2 + BAD.2 + BAE.2 + BAF.2 + BAG.2 + BAH.2 + BAI.2 + BAJ.2 + BAK.2 + BAL.2 + BAM.2 + BAN.2 +
+        BAO.2 + BAP.2 + BAQ.2 + BAR.2 + BAS.2 + BAT.2 + BAU.2 + BAV.2 + BAW.2 + BAX.2 + BAY.2 + BAZ.2 + BBA.2 +
+        BAA.3 + BAB.3 + BAC.3 + BAD.3 + BAE.3 + BAF.3 + BAG.3 + BAH.3 + BAI.3 + BAJ.3 + BAK.3 + BAL.3 + BAM.3 + BAN.3 +
+        BAO.3 + BAP.3 + BAQ.3 + BAR.3 + BAS.3 + BAT.3 + BAU.3 + BAV.3 + BAW.3 + BAX.3 + BAY.3 + BAZ.3 + BBA.3 +
+        BAA.4 + BAB.4 + BAC.4 + BAD.4 + BAE.4 + BAF.4 + BAG.4 + BAH.4 + BAI.4 + BAJ.4 + BAK.4 + BAL.4 + BAM.4 + BAN.4 +
+        BAO.4 + BAP.4 + BAQ.4 + BAR.4 + BAS.4 + BAT.4 + BAU.4 + BAV.4 + BAW.4 + BAX.4 + BAY.4 + BAZ.4 + BBA.4 +
+        BAA.5 + BAB.5 + BAC.5 + BAD.5 + BAE.5 + BAF.5 + BAG.5 + BAH.5 + BAI.5 + BAJ.5 + BAK.5 + BAL.5 + BAM.5 + BAN.5 +
+        BAO.5 + BAP.5 + BAQ.5 + BAR.5 + BAS.5 + BAT.5 + BAU.5 + BAV.5 + BAW.5 + BAX.5 + BAY.5 + BAZ.5 + BBA.5 +
         CA.1 + CB.1 + CC.1 + CD.1 + CE.1 + CF.1 + CG.1 + CH.1 +
         CA.2 + CB.2 + CC.2 + CD.2 + CE.2 + CF.2 + CG.2 + CH.2 +
         CA.3 + CB.3 + CC.3 + CD.3 + CE.3 + CF.3 + CG.3 + CH.3 +
