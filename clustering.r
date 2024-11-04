@@ -6,7 +6,6 @@ Sys.setenv(LANG = "en")
 source("./src/load_data.r")
 source("./src/preprocessing/preprocessing_pipeline.r")
 source("./src/core/build_graph.r")
-source("./src/core/build_graph_cox.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/plot/km_plot.r")
 source("./src/models/model6.r")
@@ -32,9 +31,9 @@ msm <- build_m6(
     dataset$dead_times
 )
 
-dataset$radiomics_pre <- subset(dataset$radiomics_pre, select = -c(AH, AI))
-dataset$radiomics_post <- subset(dataset$radiomics_post, select = -c(AH, AI))
-coefs <- msm$coefficients[1:25]
+dataset$radiomics_pre <- subset(dataset$radiomics_pre, select = -c(AAM))
+coefs <- msm$coefficients[c(1:12, 14:27)]
+#coefs <- msm$coefficients[1:26]
 
 list[features, times, responses, frequencies, atrisk, tied] <- 
     do_preprocessing(dataset$radiomics_pre, dataset$relapse_times, dataset$relapse_status)
@@ -44,12 +43,30 @@ lambda <- 1
 eta <- 0.1
 tau <- 10
 
+#GRID
+if(FALSE) {
+    for (l in 1:20) {
+        for (e in 1:20) {
+            for (t in 1:100) {
+                result <- build_graph(features, frequencies, responses, atrisk, l * 0.2, e * 0.1, t * 0.5)
+                optimal_clusters_number <- sum(eigen(result$l, only.values = TRUE)$values == 0)
+
+                if (optimal_clusters_number != 0) {
+                    print("AAAA")
+                }
+
+            }
+        }
+    }
+}
+#------------
+
 message("Building similarity graph")
 result <- build_graph(features, frequencies, responses, atrisk, lambda, eta, tau, coefs)
 
-#TODO grid search
-optimal_clusters_number <- 2
 message("Performing spectral clustering")
+#optimal_clusters_number <- sum(eigen(result$l, only.values = TRUE)$values == 0)
+optimal_clusters_number <- 2
 clusters <- spectral_clustering(result$s, optimal_clusters_number)
 
 plot_clusters(features, times, responses, clusters$group)
