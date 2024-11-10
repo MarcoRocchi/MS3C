@@ -1,12 +1,12 @@
 library(survival)
 
 #TODO generalizzare
-plot_clusters <- function(features, times, responses, clusters) {
+plot_clusters <- function(features, times, responses, clusters, xlabel, ylabel) {
     data <- as.data.frame(cbind(features, times, responses, clusters))
 
     #TODO verificare formula
     model <- survfit(Surv(times, responses) ~ clusters, data = data)
-    plot(model, conf.int = FALSE, xlab = "Time (years)", ylab = "p(not relapse)",
+    plot(model, conf.int = FALSE, xlab = xlabel, ylab = ylabel,
         col = c("blue", "green"))
     
     legend(

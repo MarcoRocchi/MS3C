@@ -4,9 +4,12 @@ source("./src/preprocessing/compute_frequencies.r")
 source("./src/preprocessing/compute_atrisk.r")
 source("./src/preprocessing/compute_tied.r")
 
+#TODO rename file
+#TODO remove unused
+
 do_preprocessing <- function(features, times, responses) {
     features <- standardize_columns(as.matrix(features))
-    list[features, times, responses] <- sort_times(features, times, responses)
+    list[features, times, censoring] <- sort_times(features, times, responses)
     frequencies <- compute_frequencies(features)
     atrisk <- compute_atrisk(times)
     tied <- compute_tied(times)
@@ -14,7 +17,7 @@ do_preprocessing <- function(features, times, responses) {
     return(list(
             features = features,
             times = times,
-            responses = responses,
+            censoring = censoring,
             frequencies = frequencies,
             atrisk = atrisk,
             tied = tied
@@ -22,7 +25,18 @@ do_preprocessing <- function(features, times, responses) {
     )
 }
 
-preprocess <- function(features) {
+preprocess <- function(dataset) {
+    message("Preprocessing data")
+
+    dataset$radiomics_pre <- standardize_columns(dataset$radiomics_pre)
+    dataset$radiomics_post <- standardize_columns(dataset$radiomics_post)
+    dataset$pre_operative <- preprocess_pre_operative(dataset$pre_operative)
+
+    return(dataset)
+}
+
+
+preprocess_radiomics <- function(features) {
     features <- standardize_columns(features)
 
     return(features)

@@ -16,8 +16,8 @@ message("Loading data")
 dataset <- load_data()
 
 message("Preprocessing data")
-preprocessed_pre <- preprocess(dataset$radiomics_pre)
-preprocessed_post <- preprocess(dataset$radiomics_post)
+preprocessed_pre <- preprocess_radiomics(dataset$radiomics_pre)
+preprocessed_post <- preprocess_radiomics(dataset$radiomics_post)
 preprocessed_pre_operative <- preprocess_pre_operative(dataset$pre_operative)
 
 msm <- build_m6(
@@ -31,20 +31,19 @@ msm <- build_m6(
     dataset$dead_times
 )
 
-dataset$radiomics_pre <- subset(dataset$radiomics_pre, select = -c(AAM))
-coefs <- msm$coefficients[c(1:12, 14:27)]
-#coefs <- msm$coefficients[1:26]
+dataset$radiomics_post <- subset(dataset$radiomics_post, select = -c(BAM, BAH))
+coefs <- msm$coefficients[c(28:38, 40:53)]
 
 list[features, times, responses, frequencies, atrisk, tied] <- 
-    do_preprocessing(dataset$radiomics_pre, dataset$relapse_times, dataset$relapse_status)
+    do_preprocessing(dataset$radiomics_post, dataset$relapse_times, dataset$relapse_status)
 
 #TODO grid search
 lambda <- 1
 eta <- 0.1
 tau <- 10
 
-#GRID
-if(FALSE) {
+#---------------------------------------------------------------------------------------------------------
+if (FALSE) {
     for (l in 1:20) {
         for (e in 1:20) {
             for (t in 1:100) {
@@ -59,16 +58,20 @@ if(FALSE) {
         }
     }
 }
-#------------
+#---------------------------------------------------------------------------------------------------------
 
 message("Building similarity graph")
-result <- build_graph(features, frequencies, responses, atrisk, lambda, eta, tau, coefs)
+result <- build_graph(features, frequencies, responses, atrisk, lambda, eta, tau)
 
 message("Performing spectral clustering")
 #optimal_clusters_number <- sum(eigen(result$l, only.values = TRUE)$values == 0)
 optimal_clusters_number <- 2
 clusters <- spectral_clustering(result$s, optimal_clusters_number)
 
-plot_clusters(features, times, responses, clusters$group)
+#TODO
+print(sum(clusters$group == 1))
+print(sum(clusters$group == 2))
+
+plot_clusters(features, times, responses, clusters$group, "Time (years)", "p(not dead)")
 
 message("End")

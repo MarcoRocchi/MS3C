@@ -1,23 +1,32 @@
 source("./src/core/likelihood.r")
 
-compute_gradient <- function(w, radiomics, freq, cens, atrisk) {
-    obsfreq <- freq * (!cens)
-    r <- exp(radiomics %*% w)
-    risksum <- rev(cumsum(rev(freq * r)))
-    risksum <- risksum[atrisk]
-    p <- ncol(radiomics)
-    xr <- radiomics * kronecker(matrix(1, 1, p), r * freq)
-    xrsum <- matrix(rev(cumsum(rev(xr))), nrow = nrow(radiomics))
-    xrsum <- xrsum[atrisk, ]
-    a <- xrsum / kronecker(matrix(1, 1, p), risksum)
-    dl <- -t(t(obsfreq) %*% (radiomics - a))
+compute_log_likelihood <- function(w, data) {
+    start <- 1
+    stop <- 0
+    dl <- c()
+
+    for (d in data) {
+        stop <- stop + ncol(d$features)
+        #TODO controllare flusso variabile censoring
+        obsfreq <- d$frequencies * (!d$censoring)
+        r <- exp(d$features %*% w[start:stop])
+        risksum <- rev(cumsum(rev(d$frequencies * r)))
+        risksum <- risksum[d$atrisk]
+        p <- ncol(d$features)
+        xr <- d$features * kronecker(matrix(1, 1, p), r * d$frequencies)
+        xrsum <- matrix(rev(cumsum(rev(xr))), nrow = nrow(d$features))
+        xrsum <- xrsum[d$atrisk, ]
+        a <- xrsum / kronecker(matrix(1, 1, p), risksum)
+        dl <- append(dl, -t(t(obsfreq) %*% (d$features - a)))
+        start <- start + ncol(d$features)
+    }
 
     return(dl)
 }
 
-evaluate_gradient <- function(radiomics, freq, cens, atrisk, w, eta) {
-    grad_w <- compute_gradient(w, radiomics, freq, cens, atrisk)
-    
+evaluate_gradient <- function(data, w, eta) {
+    grad_w <- compute_log_likelihood(w, data)
+    #QUI
     grad_cs <- numeric(ncol(radiomics))
 
     for (i in seq_along(ncol(radiomics))) {

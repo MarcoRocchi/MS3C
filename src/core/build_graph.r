@@ -5,8 +5,11 @@ source("./src/core/l2_distance.r")
 
 library(fastmatrix)
 
-build_graph <- function(radiomics, freq, cens, atrisk, lambda, eta, tau, w_init) {
-    features_count <- ncol(radiomics)
+build_graph <- function(data, lambda, eta, tau, w_init) {
+    features_count <- 0
+    for (d in data) {
+        features_count <- features_count + ncol(d$features)
+    }
 
     if (missing(w_init)) {
         wz <- matrix(0, features_count, 1)
@@ -37,7 +40,7 @@ build_graph <- function(radiomics, freq, cens, atrisk, lambda, eta, tau, w_init)
         alpha <- (t_old - 1) / t
         ws <- (1 + alpha) * wz - alpha * wz_old
 
-        list[gws, Fs] <- evaluate_gradient(radiomics, freq, cens, atrisk, ws, eta)
+        list[gws, Fs] <- evaluate_gradient(data, ws, eta)
                 
         k <- 10
 

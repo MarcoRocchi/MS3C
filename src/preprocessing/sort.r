@@ -4,5 +4,5 @@ sort_times <- function(features, times, responses) {
   times <- times[sorted_indices]
   responses <- !responses[sorted_indices]
 
-  return(list(features = features, times = times, responses = responses))
+  return(list(features = features, times = times, censoring = responses))
 }

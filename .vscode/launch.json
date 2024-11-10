@@ -22,6 +22,14 @@
         },
         {
             "type": "R-Debugger",
+            "name": "MSM clustering",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "msmclustering.r"
+        },
+        {
+            "type": "R-Debugger",
             "name": "Current file",
             "request": "launch",
             "debugMode": "file",
