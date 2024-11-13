@@ -15,10 +15,21 @@ library(dplyr)
 library(gsubfn)
 
 dataset <- load_data()
+patients_count <- dataset$patients_count
 dataset <- preprocess(dataset)
 dataset <- expand_transitions(dataset)
 #TODO add one level of abstraction?
 dataset <- group_split(dataset, dataset$trans)
+
+#TODO
+for (d in dataset) {
+    for (i in 1:patients_count) {
+        patients <- as.list(d["id"])$id
+        if (!i %in% patients) {
+            print("Missing patient")
+        }  
+    }
+}
 
 processed_dataset <- list()
 
@@ -31,6 +42,8 @@ for (d in dataset) {
 
     processed_dataset[[length(processed_dataset) + 1]] <- do_preprocessing(features, times, status)
 }
+
+#TODO gestire ordinamento diverso dei pazienti nei vari stati
 
 #------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +74,8 @@ message("Building similarity graph")
 result <- build_graph(processed_dataset, lambda, eta, tau)
 
 message("Performing spectral clustering")
-#optimal_clusters_number <- sum(eigen(result$l, only.values = TRUE)$values == 0)
+optimal_clusters_number <- sum(eigen(result$l, only.values = TRUE)$values == 0)
+#TODOs
 optimal_clusters_number <- 2
 clusters <- spectral_clustering(result$s, optimal_clusters_number)
 

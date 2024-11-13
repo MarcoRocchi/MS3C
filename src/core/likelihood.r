@@ -1,10 +1,19 @@
-neglogparlike <- function(w, features, freq, cens, atrisk) {
-    obsfreq <- as.matrix(freq * (!cens), nrow=length(freq), ncol=1)
-    xb <- features %*% w
-    r <- exp(xb)
-    risksum <- rev(cumsum(rev(freq * r)))
-    risksum <- risksum[atrisk]
-    l <- -(t(obsfreq) %*% (xb - log(risksum)))
+neglogparlike <- function(w, data) {
+    l <- 0
 
+    start <- 1
+    stop <- 0
+
+    for (d in data) {
+        stop <- stop + ncol(d$features)
+        obsfreq <- as.matrix(d$frequencies * (!d$censoring), nrow = length(d$frequencies), ncol = 1)
+        xb <- d$features %*% w[start:stop]
+        r <- exp(xb)
+        risksum <- rev(cumsum(rev(d$frequencies * r)))
+        risksum <- risksum[d$atrisk]
+        l <- l - (t(obsfreq) %*% (xb - log(risksum)))
+        start <- start + ncol(d$features)
+    }
+    
     return(l)
 }

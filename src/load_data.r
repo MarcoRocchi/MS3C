@@ -20,6 +20,8 @@ load_data <- function() {
     radiomics_pre <- rename(radiomics_pre[, -1], names.radiomics_pre, "")
     radiomics_pre <- as.matrix(radiomics_pre)
 
+    patients_count <- nrow(radiomics_pre)
+
     radiomics_post <- read_excel("../Data/V2/2 - Selected features/2 - Post-chemo.xlsx")
     radiomics_post <- rename(radiomics_post[, -1], names.radiomics_post, "")
     radiomics_post <- as.matrix(radiomics_post)
@@ -64,6 +66,7 @@ load_data <- function() {
     dimnames(surgery_times) <- list(NULL, names.surgery_time)
 
     return(list(
+        patients_count = patients_count,
         radiomics_pre = radiomics_pre, 
         radiomics_post = radiomics_post,
         pre_operative = pre_operative,

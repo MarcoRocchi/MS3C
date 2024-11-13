@@ -40,14 +40,21 @@ build_graph <- function(data, lambda, eta, tau, w_init) {
         alpha <- (t_old - 1) / t
         ws <- (1 + alpha) * wz - alpha * wz_old
 
-        list[gws, Fs] <- evaluate_gradient(data, ws, eta)
+        list[gws, Fs] <- evaluate_gradient(data, ws, eta, features_count)
                 
         k <- 10
 
-        graph <- CalGraphWeight(radiomics, ws, k)
+        all_features <- data[[1]]$features
+
+        for (i in 2:length(data)) {
+            all_features <- cbind(all_features, data[[i]]$features)
+        }
+
+        #TODO all features to estimate time, filtered for distance
+        graph <- CalGraphWeight(all_features, ws, k)
         
-        tmp <- tau * crossprod(radiomics, graph$L)
-        tmp2 <- radiomics %*% ws
+        tmp <- tau * crossprod(all_features, graph$L)
+        tmp2 <- all_features %*% ws
         res <- tmp %*% tmp2
 
         gws <- gws + res
@@ -63,7 +70,7 @@ build_graph <- function(data, lambda, eta, tau, w_init) {
 
         while (innerIter < maxInnerIter && r_sum > 1e-20 && (is.nan(Fzp) || Fzp > Fzp_gamma)) {
             wzp <- l1_projection(ws - gws / gamma, lambda / gamma)
-            Fzp <- neglogparlike(wzp$z, radiomics, freq, cens, atrisk)
+            Fzp <- neglogparlike(wzp$z, data)
             delta_wzp <- wzp$z - ws
             r_sum <- matrix.norm(delta_wzp, type = "Frobenius") ^ 2
             Fzp_gamma <- Fs + sum(delta_wzp * gws) + gamma / 2 * matrix.norm(delta_wzp, type = "Frobenius") ^ 2

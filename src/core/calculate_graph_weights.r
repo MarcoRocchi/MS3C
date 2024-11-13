@@ -1,8 +1,10 @@
 CalGraphWeight <- function(radiomics, w, k) {
+    #TODO ogni transizone ha il suo w
     mu <- 10e-4
     alpha <- 1
     n <- nrow(radiomics)
 
+    #TODO non usare feature duplicate
     distX <- l2_distance(t(radiomics), t(radiomics))
 
     y <- radiomics %*% w
@@ -24,7 +26,6 @@ CalGraphWeight <- function(radiomics, w, k) {
         S[i, ] <- d / sum(d)
     }
 
-    #S <- 
     SS <- (S + t(S)) / 2
     D <- diag(rowSums(SS))
     L <- D - SS
