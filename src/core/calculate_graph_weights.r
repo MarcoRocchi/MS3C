@@ -1,11 +1,10 @@
-CalGraphWeight <- function(radiomics, w, k) {
+CalGraphWeight <- function(radiomics, non_repeated_features, w, k) {
     #TODO ogni transizone ha il suo w
     mu <- 10e-4
     alpha <- 1
     n <- nrow(radiomics)
 
-    #TODO non usare feature duplicate
-    distX <- l2_distance(t(radiomics), t(radiomics))
+    distX <- l2_distance(t(non_repeated_features), t(non_repeated_features))
 
     y <- radiomics %*% w
     distf <- l2_distance(t(y), t(y))

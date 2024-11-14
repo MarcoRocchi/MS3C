@@ -14,7 +14,7 @@ rename <- function(df, names, prefix = "") {
 
 load_data <- function() {
     #TODO embedding
-    message("Loading data")
+    cat("\nLoading data")
 
     radiomics_pre <- read_excel("../Data/V2/2 - Selected features/1 - Pre-chemo.xlsx")
     radiomics_pre <- rename(radiomics_pre[, -1], names.radiomics_pre, "")

@@ -3,6 +3,7 @@ library("mstate")
 source("./src/utils/features.r")
 
 build_m4 <- function(pre, post, preop, surgery, relapse_status, post_times, surgery_times, relapse_times) {
+    .Deprecated("Use model 6 with competing risk")
     cat("Building model 4: Pre chemo -> Post chemo -> Surgery -> Relapse\n")
 
     in_state <- 1

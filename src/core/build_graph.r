@@ -5,7 +5,7 @@ source("./src/core/l2_distance.r")
 
 library(fastmatrix)
 
-build_graph <- function(data, lambda, eta, tau, w_init) {
+build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
     features_count <- 0
     for (d in data) {
         features_count <- features_count + ncol(d$features)
@@ -51,7 +51,7 @@ build_graph <- function(data, lambda, eta, tau, w_init) {
         }
 
         #TODO all features to estimate time, filtered for distance
-        graph <- CalGraphWeight(all_features, ws, k)
+        graph <- CalGraphWeight(all_features, non_repeated_features, ws, k)
         
         tmp <- tau * crossprod(all_features, graph$L)
         tmp2 <- all_features %*% ws

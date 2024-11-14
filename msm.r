@@ -10,6 +10,8 @@ source("./src/models/model5.r")
 source("./src/models/model6.r")
 source("./src/models/model7.r")
 
+#TODO restore
+
 dataset <- load_data()
 
 dataset$radiomics_pre <- preprocess(dataset$radiomics_pre)

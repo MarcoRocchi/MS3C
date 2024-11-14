@@ -2,6 +2,8 @@ library("mstate")
 
 source("./src/utils/features.r")
 
+#TODO replace model 5 with this
+
 build_m7 <- function(pre, 
                     post, 
                     preop, 

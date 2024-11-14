@@ -1,31 +1,121 @@
 library("mstate")
 
+#TODO replace model 4 with this
+
 source("./src/utils/features.r")
 
-build_m6 <- function(pre, post, preop, relapse_status, dead_status, post_times, relapse_times, dead_times) {
-    cat("Building model 6: Pre chemo -> Post chemo -> Relapse -> Dead with competing risk\n")
+get_tmat <- function() {
+    tmat <- transMat(
+        x = list(c(2), c(3, 4), c(4), c()),
+        names = c("Pre chemo", "Post chemo", "Relapse", "Dead")
+    )
+
+    return(tmat)
+}
+
+expand_dataset <- function(dataset) {
+    cat("\nBuilding long dataset for model 6")
 
     in_state <- 1
 
-    data <- cbind(pre, post, preop, relapse_status, dead_status, post_times, relapse_times, dead_times, in_state)
+    tmat <- get_tmat()
 
-    tmat <- transMat(
-                    x = list(c(2), c(3, 4), c(4), c()),
-                    names = c("Pre", "Post", "Relapse", "Dead")
+    data <- cbind(
+        dataset$radiomics_pre,
+        dataset$radiomics_post,
+        dataset$pre_operative, 
+        dataset$post_times, 
+        dataset$relapse_times, 
+        dataset$relapse_status, 
+        dataset$dead_times,
+        dataset$dead_status,
+        in_state
     )
 
-    print(tmat)
+    data_long <- msprep(
+        time = c(NA, names.post_time, names.relapse_time, names.dead_time),
+        status = c(NA, "in_state", names.relapse_indicator, names.dead_indicator),
+        data = data,
+        trans = tmat,
+        keep = c(names.radiomics_pre, names.radiomics_post, names.pre_operative)
+    )
 
-    data_long <- msprep(time = c(NA, names.post_time, names.relapse_time, names.dead_time),
-                        status = c(NA, "in_state", names.relapse_indicator, names.dead_indicator),
-                        data = data,
-                        trans = tmat,
-                        keep = c(names.radiomics_pre, names.radiomics_post, names.pre_operative))
+    return(data_long)
+}
 
-    data_long <- expand.covs(data_long, 
-                            c(names.radiomics_pre, names.radiomics_post, names.pre_operative), 
-                            append = TRUE,
-                            longnames = FALSE)
+#TODO move out
+insert_missing_patients <- function(d, patients_count) {
+    patients <- as.list(d["id"])$id
+
+    for (j in 1:patients_count) {
+        if (!j %in% patients) {
+            new_patient <- setNames(numeric(ncol(d)), names(d))
+            new_patient["id"] <- j
+            d <- rbind(d, new_patient)
+        }
+    }
+
+    return(arrange(d, id))
+}
+
+split_by_transition <- function(dataset, patients_count) {
+    dataset <- group_split(dataset, dataset$trans)
+
+    #Pre chemo -> Post chemo
+    d <- insert_missing_patients(dataset[[1]], patients_count)
+
+    non_repeated_features <- d[c(names.radiomics_pre, names.pre_operative)]
+    t1_data <- list(
+        features = as.matrix(d[c(names.radiomics_pre, names.pre_operative)]),
+        times = as.matrix(d["time"]),
+        status = as.matrix(d["status"])
+    )
+
+    #Post chemo -> Relapse
+    d <- insert_missing_patients(dataset[[2]], patients_count)
+
+    non_repeated_features <- cbind(non_repeated_features, d[c(names.radiomics_post)])
+    t2_data <- list(
+        features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
+        times = as.matrix(d["time"]),
+        status = as.matrix(d["status"])
+    )
+
+    #Post chemo -> Dead
+    d <- insert_missing_patients(dataset[[3]], patients_count)
+
+    t3_data <- list(
+        features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
+        times = as.matrix(d["time"]),
+        status = as.matrix(d["status"])
+    )
+
+    #Relapse -> Dead
+    d <- insert_missing_patients(dataset[[4]], patients_count)
+
+    t4_data <- list(
+        features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
+        times = as.matrix(d["time"]),
+        status = as.matrix(d["status"])
+    )
+
+    return(list(
+        data = list(t1_data, t2_data, t3_data, t4_data),
+        non_repeated_features = as.matrix(non_repeated_features))
+    )
+}
+
+build_m6 <- function(dataset) {
+    cat("Building model 6: Pre chemo -> Post chemo -> Relapse -> Dead with competing risk\n")
+
+    data <- expand_dataset(dataset)
+
+    data_long <- expand.covs(
+        data, 
+        c(names.radiomics_pre, names.radiomics_post, names.pre_operative), 
+        append = TRUE,
+        longnames = FALSE
+    )
 
     print(events(data_long))
 

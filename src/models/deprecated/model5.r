@@ -12,6 +12,7 @@ build_m5 <- function(pre,
                     surgery_times, 
                     relapse_times, 
                     dead_times) {
+    .Deprecated("Use model 7 with competing risks")
     
     cat("Building model 5: Pre chemo -> Post chemo -> Surgery -> Relapse -> Dead\n")
 
