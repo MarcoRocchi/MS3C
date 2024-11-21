@@ -1,3 +1,4 @@
+#Computes the negative partial log-likelihood of the multiview Cox
 neglogparlike <- function(w, data) {
     l <- 0
 

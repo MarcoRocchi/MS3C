@@ -35,7 +35,7 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
     while (!((iterations > max_iterations) || (iterations > (max_iterations / 2) &&
             abs(funcVal[length(funcVal)] - funcVal[length(funcVal) - 1]) <= 1e-6))) {
 
-        message(sprintf("Iteration: %d", iterations))
+        cat(sprintf("\nIteration: %d", iterations))
 
         alpha <- (t_old - 1) / t
         ws <- (1 + alpha) * wz - alpha * wz_old
@@ -50,9 +50,9 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
             all_features <- cbind(all_features, data[[i]]$features)
         }
 
-        #TODO all features to estimate time, filtered for distance
         graph <- CalGraphWeight(all_features, non_repeated_features, ws, k)
         
+        #TODO non ha senso. Devo usare i pazienti sempre nello stesso ordine
         tmp <- tau * crossprod(all_features, graph$L)
         tmp2 <- all_features %*% ws
         res <- tmp %*% tmp2

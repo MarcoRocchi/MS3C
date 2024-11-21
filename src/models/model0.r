@@ -1,22 +1,19 @@
 library("mstate")
 
-#TODO replace model 4 with this
-#TODO bring all models at this architecture
-
 source("./src/utils/features.r")
 source("./src/fill_dataset.r")
 
 get_tmat <- function() {
     tmat <- transMat(
-        x = list(c(2), c(3, 4), c(4), c()),
-        names = c("Pre chemo", "Post chemo", "Relapse", "Dead")
+        x = list(c(2), c()),
+        names = c("Pre chemo", "Relapse")
     )
 
     return(tmat)
 }
 
 expand_dataset <- function(dataset) {
-    cat("\nBuilding long dataset for model 6")
+    cat("\nBuilding long dataset for model 0")
 
     in_state <- 1
 
@@ -24,22 +21,16 @@ expand_dataset <- function(dataset) {
 
     data <- cbind(
         dataset$radiomics_pre,
-        dataset$radiomics_post,
-        dataset$pre_operative, 
-        dataset$post_times, 
-        dataset$relapse_times, 
-        dataset$relapse_status, 
-        dataset$dead_times,
-        dataset$dead_status,
-        in_state
+        dataset$relapse_times,
+        dataset$relapse_status 
     )
 
     data_long <- msprep(
-        time = c(NA, names.post_time, names.relapse_time, names.dead_time),
-        status = c(NA, "in_state", names.relapse_indicator, names.dead_indicator),
+        time = c(names.relapse_time),
+        status = c(names.relapse_indicator),
         data = data,
         trans = tmat,
-        keep = c(names.radiomics_pre, names.radiomics_post, names.pre_operative)
+        keep = c(names.radiomics_pre)
     )
 
     return(data_long)
@@ -48,58 +39,25 @@ expand_dataset <- function(dataset) {
 split_by_transition <- function(dataset, patients_count) {
     dataset <- group_split(dataset, dataset$trans)
 
-    #Pre chemo -> Post chemo
+    #Pre chemo -> Relapse
     d <- insert_missing_patients(dataset[[1]], patients_count)
 
-    non_repeated_features <- d[c(names.radiomics_pre, names.pre_operative)]
+    non_repeated_features <- cbind(non_repeated_features, d[c(names.radiomics_pre)])
     t1_data <- list(
-        features = as.matrix(d[c(names.radiomics_pre, names.pre_operative)]),
+        features = as.matrix(d[c(names.radiomics_pre)]),
         times = as.matrix(d["time"]),
         status = as.matrix(d["status"])
-    )
-
-    #Post chemo -> Relapse
-    d <- insert_missing_patients(dataset[[2]], patients_count)
-
-    non_repeated_features <- cbind(non_repeated_features, d[c(names.radiomics_post)])
-    t2_data <- list(
-        features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
-        times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
-    )
-
-    #Post chemo -> Dead
-    d <- insert_missing_patients(dataset[[3]], patients_count)
-
-    t3_data <- list(
-        features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
-        times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
-    )
-
-    #Relapse -> Dead
-    d <- insert_missing_patients(dataset[[4]], patients_count)
-
-    t4_data <- list(
-        features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
-        times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
-    )
-
-    return(list(
-        data = list(t1_data, t2_data, t3_data, t4_data),
-        non_repeated_features = as.matrix(non_repeated_features))
     )
 }
 
-build_m6 <- function(dataset) {
-    cat("Building model 6: Pre chemo -> Post chemo -> Relapse -> Dead with competing risk\n")
+build_m0 <- function(dataset) {
+    cat("Building model 0: Pre chemo -> Relapse\n")
 
     data <- expand_dataset(dataset)
 
     data_long <- expand.covs(
         data, 
-        c(names.radiomics_pre, names.radiomics_post, names.pre_operative), 
+        c(names.radiomics_pre), 
         append = TRUE,
         longnames = FALSE
     )

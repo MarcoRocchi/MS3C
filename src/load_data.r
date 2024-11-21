@@ -14,6 +14,7 @@ rename <- function(df, names, prefix = "") {
 
 load_data <- function() {
     #TODO embedding
+    #TODO controllare flusso variabile censoring
     cat("\nLoading data")
 
     radiomics_pre <- read_excel("../Data/V2/2 - Selected features/1 - Pre-chemo.xlsx")
