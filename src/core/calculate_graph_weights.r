@@ -2,11 +2,12 @@
 CalGraphWeight <- function(features, non_repeated_features, w, k) {
     #TODO ogni transizone ha il suo w
     #TODO rendere mu parametrizzabile
-    mu <- 1e-4
+    mu <- 1e-3
     alpha <- 1
     n <- nrow(features)
 
-    distX <- as.matrix(dist(non_repeated_features, diag = TRUE, upper = TRUE))
+    #TODO restore non_repeated features but preprocessed
+    distX <- as.matrix(dist(features, diag = TRUE, upper = TRUE))
     distX <- distX * distX
 
     y <- features %*% w

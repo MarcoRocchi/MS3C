@@ -29,9 +29,9 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
     max_iterations <- 100
 
     #TODO
-    funcVal <- as.numeric(list(0, 0))
+    funcVal <- as.numeric(c())
 
-    while (iterations < max_iterations && (!((iterations > (max_iterations / 2) &&
+    while (iterations < max_iterations && (!((iterations >= (max_iterations / 2) &&
             abs(funcVal[length(funcVal)] - funcVal[length(funcVal) - 1]) <= 1e-6)))) {
 
         cat(sprintf("\nIteration: %d", iterations))

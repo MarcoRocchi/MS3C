@@ -1,7 +1,7 @@
 library("mstate")
 
-source("./src/utils/features.r")
-source("./src/fill_dataset.r")
+source("./src/data/features.r")
+source("./src/data/fill_dataset.r")
 
 get_tmat <- function() {
     tmat <- transMat(
@@ -26,8 +26,8 @@ expand_dataset <- function(dataset) {
     )
 
     data_long <- msprep(
-        time = c(names.relapse_time),
-        status = c(names.relapse_indicator),
+        time = c(NA, names.relapse_time),
+        status = c(NA, names.relapse_indicator),
         data = data,
         trans = tmat,
         keep = c(names.radiomics_pre)
@@ -42,11 +42,16 @@ split_by_transition <- function(dataset, patients_count) {
     #Pre chemo -> Relapse
     d <- insert_missing_patients(dataset[[1]], patients_count)
 
-    non_repeated_features <- cbind(non_repeated_features, d[c(names.radiomics_pre)])
+    non_repeated_features <- d[c(names.radiomics_pre)]
     t1_data <- list(
         features = as.matrix(d[c(names.radiomics_pre)]),
         times = as.matrix(d["time"]),
         status = as.matrix(d["status"])
+    )
+
+    return(list(
+        data = list(t1_data),
+        non_repeated_features = as.matrix(non_repeated_features))
     )
 }
 

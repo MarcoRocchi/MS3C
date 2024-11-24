@@ -1,9 +1,10 @@
 preprocess <- function(dataset) {
     cat("\nPreprocessing data")
 
-    dataset$radiomics_pre <- preprocess_radiomics(dataset$radiomics_pre)
-    dataset$radiomics_post <- preprocess_radiomics(dataset$radiomics_post)
-    dataset$pre_operative <- preprocess_pre_operative(dataset$pre_operative)
+    #TODO verificare come funziona s2gc
+    dataset$radiomics_pre <- t(preprocess_radiomics(t(dataset$radiomics_pre)))
+    dataset$radiomics_post <- t(preprocess_radiomics(t(dataset$radiomics_post)))
+    dataset$pre_operative <- t(preprocess_pre_operative(t(dataset$pre_operative)))
 
     return(dataset)
 }

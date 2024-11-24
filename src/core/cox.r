@@ -1,6 +1,6 @@
 #Computes the negative partial log-likelihood of the multiview Cox
 neglogparlike <- function(w, data) {
-    l <- 0
+    l <- 0.0
 
     start <- 1
     stop <- 0
@@ -12,7 +12,7 @@ neglogparlike <- function(w, data) {
         r <- exp(xb)
         risksum <- rev(cumsum(rev(d$frequencies * r)))
         risksum <- risksum[d$atrisk]
-        l <- l - (t(obsfreq) %*% (xb - log(risksum)))
+        l <- l - as.double(t(obsfreq) %*% (xb - log(risksum)))
         start <- start + ncol(d$features)
     }
     

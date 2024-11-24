@@ -5,16 +5,16 @@ library(Rcpp)
 
 spectral_clustering <- function(w, num_clusters) {
     degs <- rowSums(w)
-    D <- Diagonal(x = degs)
+    D <- as.matrix(Diagonal(x = degs))
 
     L <- D - w
 
     degs[degs == 0] <- .Machine$double.eps
-    D <- Diagonal(x = 1 / sqrt(degs))
+    D <- as.matrix(Diagonal(x = 1 / sqrt(degs)))
     L <- D %*% L %*% D
 
     eig_result <- eigen(L)
-    eigenvalue <- diag(x = tail(eig_result$values, num_clusters))
+    eigenvalue <- diag(x = rev(tail(eig_result$values, num_clusters)))
     U <- t(as.matrix(tail(eig_result$vectors, num_clusters)))
     a <- order(diag(eigenvalue))
     eigenvalue <- eigenvalue[, a]

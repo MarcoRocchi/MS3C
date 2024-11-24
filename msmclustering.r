@@ -7,7 +7,7 @@ Sys.setenv(LANG = "en")
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model2.r")
+source("./src/models/model0.r")
 source("./src/core/build_graph.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/plot/km_plot.r")
@@ -36,9 +36,9 @@ e_opt <- 0
 t_opt <- 0
 eig <- 0
 
-lambda <- 5
+lambda <- 1
 eta <- 0.1
-tau <- 1
+tau <- 10
 
 #for (a in list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)){
 #    for (b in list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)) {
@@ -59,7 +59,7 @@ result <- build_graph(processed_dataset, dataset$non_repeated_features, lambda, 
 cat("\nPerforming spectral clustering")
 optimal_clusters_number <- sum(eigen(result$l, only.values = TRUE)$values < 1e-10)
 cat(sprintf("\nOptimal clusters number: %d", optimal_clusters_number))
-clusters <- spectral_clustering(result$s, optimal_clusters_number)
+clusters <- spectral_clustering(result$s, 4)
 
 #TODO
 #plot_clusters(dataset$non_repeated_features, times, responses, clusters$group)
