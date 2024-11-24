@@ -32,29 +32,30 @@ compute_log_likelihood <- function(w, data) {
 
 evaluate_gradient <- function(data, w, eta, features_count) {
     grad_w <- compute_log_likelihood(w, data)
-    grad_cs <- numeric(features_count)
+    #grad_cs <- numeric(features_count)
 
-    start_i <- 1
-    stop_i <- 0
+    #TODO remove
+    #start_i <- 1
+    #stop_i <- 0
 
-    for (d1 in data) {
-        stop_i <- stop_i + ncol(d1$features)
-        start_j <- 1
-        stop_j <- 0
+    #for (d1 in data) {
+    #    stop_i <- stop_i + ncol(d1$features)
+    #    start_j <- 1
+    #    stop_j <- 0
         
-        for (d2 in data) {
-            stop_j <- stop_j + ncol(d2$features)
-            grad_cs[start_i:stop_i] <- 
-                grad_cs[start_i:stop_i] + 
-                t(d1$features) %*% 
-                (d1$features %*% w[start_i:stop_i] - d2$features %*% w[start_j:stop_j])
-            start_j <- start_j + ncol(d2$features)
-        }
+    #    for (d2 in data) {
+    #        stop_j <- stop_j + ncol(d2$features)
+    #        grad_cs[start_i:stop_i] <- 
+    #            grad_cs[start_i:stop_i] + 
+    #            t(d1$features) %*% 
+    #            (d1$features %*% w[start_i:stop_i] - d2$features %*% w[start_j:stop_j])
+    #        start_j <- start_j + ncol(d2$features)
+    #    }
 
-        start_i <- start_i + ncol(d1$features)
-    }
+    #    start_i <- start_i + ncol(d1$features)
+    #}
 
-    grad_w <- grad_w #+ eta * grad_cs
+    #grad_w <- grad_w + eta * grad_cs
 
     #TODO rename: likelihood
     func_val <- neglogparlike(w, data)

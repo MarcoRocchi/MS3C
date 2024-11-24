@@ -31,7 +31,6 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
     #TODO
     funcVal <- as.numeric(list(0, 0))
 
-    #TODO verificare condizioni while (anche interno)
     while (iterations < max_iterations && (!((iterations > (max_iterations / 2) &&
             abs(funcVal[length(funcVal)] - funcVal[length(funcVal) - 1]) <= 1e-6)))) {
 
@@ -61,8 +60,8 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
 
         gws <- gws + res
         
-        innerIter <- 0
-        maxInnerIter <- 1000
+        inner_iter <- 0
+        max_inner_iter <- 1000
 
         r_sum <- 1
         Fzp_gamma <- 0
@@ -70,14 +69,14 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
 
         wzp <- NULL
 
-        while (innerIter < maxInnerIter && (r_sum > 1e-20 && (is.nan(Fzp) || Fzp > Fzp_gamma))) {
+        while (inner_iter < max_inner_iter && (r_sum > 1e-20 && (is.nan(Fzp) || Fzp > Fzp_gamma))) {
             wzp <- l1_projection(ws - gws / gamma, lambda / gamma)
             Fzp <- neglogparlike(wzp$z, data)
             delta_wzp <- wzp$z - ws
             r_sum <- matrix.norm(delta_wzp, type = "Frobenius") ^ 2
             Fzp_gamma <- Fs + sum(delta_wzp * gws) + gamma / 2 * matrix.norm(delta_wzp, type = "Frobenius") ^ 2
             gamma <- gamma * gamma_inc
-            innerIter <- innerIter + 1
+            inner_iter <- inner_iter + 1
         }
 
         wz_old <- wz
