@@ -1,7 +1,6 @@
 source("./src/core/gradient.r")
 source("./src/core/calculate_graph_weights.r")
 source("./src/core/l1_projection.r")
-source("./src/core/l2_distance.r")
 
 library(fastmatrix)
 
@@ -32,8 +31,9 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
     #TODO
     funcVal <- as.numeric(list(0, 0))
 
-    while (!((iterations > max_iterations) || (iterations > (max_iterations / 2) &&
-            abs(funcVal[length(funcVal)] - funcVal[length(funcVal) - 1]) <= 1e-6))) {
+    #TODO verificare condizioni while (anche interno)
+    while (iterations < max_iterations && (!((iterations > (max_iterations / 2) &&
+            abs(funcVal[length(funcVal)] - funcVal[length(funcVal) - 1]) <= 1e-6)))) {
 
         cat(sprintf("\nIteration: %d", iterations))
 
@@ -45,14 +45,16 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
         k <- 10
 
         all_features <- data[[1]]$features
+        all_features <- all_features[data[[1]]$patients, ]
 
         for (i in 2:length(data)) {
-            all_features <- cbind(all_features, data[[i]]$features)
+            new_data <- data[[i]]$features
+            new_data <- new_data[data[[i]]$patients, ]
+            all_features <- cbind(all_features, new_data)
         }
 
         graph <- CalGraphWeight(all_features, non_repeated_features, ws, k)
         
-        #TODO non ha senso. Devo usare i pazienti sempre nello stesso ordine
         tmp <- tau * crossprod(all_features, graph$L)
         tmp2 <- all_features %*% ws
         res <- tmp %*% tmp2
@@ -68,7 +70,7 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
 
         wzp <- NULL
 
-        while (innerIter < maxInnerIter && r_sum > 1e-20 && (is.nan(Fzp) || Fzp > Fzp_gamma)) {
+        while (innerIter < maxInnerIter && (r_sum > 1e-20 && (is.nan(Fzp) || Fzp > Fzp_gamma))) {
             wzp <- l1_projection(ws - gws / gamma, lambda / gamma)
             Fzp <- neglogparlike(wzp$z, data)
             delta_wzp <- wzp$z - ws

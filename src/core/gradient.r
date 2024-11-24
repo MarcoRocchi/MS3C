@@ -17,10 +17,12 @@ compute_log_likelihood <- function(w, data) {
 
         p <- ncol(d$features)
         xr <- d$features * kronecker(matrix(1, 1, p), r * d$frequencies)
-        xrsum <- matrix(rev(cumsum(rev(xr))), nrow = nrow(d$features))
+        revxr <- xr[nrow(xr):1, ]
+        xrsum <- apply(revxr, 2, cumsum)
+        xrsum <- xrsum[nrow(xrsum):1, ]
         xrsum <- xrsum[d$atrisk, ]
         a <- xrsum / kronecker(matrix(1, 1, p), risksum)
-        obsfreq <- d$frequencies * (!d$censoring)
+        obsfreq <- d$frequencies * as.numeric((!d$censoring))
         dl <- append(dl, -t(t(obsfreq) %*% (d$features - a)))
         start <- start + ncol(d$features)
     }
@@ -52,7 +54,7 @@ evaluate_gradient <- function(data, w, eta, features_count) {
         start_i <- start_i + ncol(d1$features)
     }
 
-    grad_w <- grad_w + eta * grad_cs
+    grad_w <- grad_w #+ eta * grad_cs
 
     #TODO rename: likelihood
     func_val <- neglogparlike(w, data)

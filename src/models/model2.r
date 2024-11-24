@@ -1,6 +1,73 @@
 library("mstate")
 
-source("./src/utils/features.r")
+source("./src/data/features.r")
+source("./src/data/fill_dataset.r")
+
+get_tmat <- function() {
+    tmat <- transMat(
+        x = list(c(2), c(3), c()), 
+        names = c("Pre", "Post", "Relapse")
+    )
+
+    return(tmat)
+}
+
+expand_dataset <- function(dataset) {
+    cat("\nBuilding long dataset for model 2")
+
+    in_state <- 1
+
+    tmat <- get_tmat()
+
+    data <- cbind(
+        dataset$radiomics_pre,
+        dataset$radiomics_post,
+        dataset$pre_operative, 
+        dataset$post_times, 
+        dataset$relapse_times,
+        dataset$relapse_status,
+        in_state
+    )
+
+    data_long <- msprep(
+        time = c(NA, names.post_time, names.relapse_time),
+        status = c(NA, "in_state", names.relapse_indicator),
+        data = data,
+        trans = tmat,
+        keep = c(names.radiomics_pre, names.radiomics_post, names.pre_operative)
+    )
+
+    return(data_long)
+}
+
+split_by_transition <- function(dataset, patients_count) {
+    dataset <- group_split(dataset, dataset$trans)
+
+    #Pre chemo -> Post chemo
+    d <- insert_missing_patients(dataset[[1]], patients_count)
+
+    non_repeated_features <- d[c(names.radiomics_pre, names.pre_operative)]
+    t1_data <- list(
+        features = as.matrix(d[c(names.radiomics_pre, names.pre_operative)]),
+        times = as.matrix(d["time"]),
+        status = as.matrix(d["status"])
+    )
+
+    #Post chemo -> Relapse
+    d <- insert_missing_patients(dataset[[2]], patients_count)
+
+    non_repeated_features <- cbind(non_repeated_features, d[c(names.radiomics_post)])
+    t2_data <- list(
+        features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
+        times = as.matrix(d["time"]),
+        status = as.matrix(d["status"])
+    )
+
+    return(list(
+        data = list(t1_data, t2_data),
+        non_repeated_features = as.matrix(non_repeated_features))
+    )
+}
 
 build_m2 <- function(pre, post, preop, relapse_status, post_times, relapse_times) {
     cat("Building model 2: Pre chemo -> Post chemo -> Relapse\n")
@@ -9,7 +76,7 @@ build_m2 <- function(pre, post, preop, relapse_status, post_times, relapse_times
 
     data <- cbind(pre, post, preop, relapse_status, post_times, relapse_times, in_state)
 
-    tmat <- transMat(x = list(c(2), c(3), c()), names = c("Pre", "Post", "Relapse"))
+    tmat <- get_tmat()
 
     print(tmat)
 

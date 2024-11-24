@@ -5,7 +5,7 @@ sort_times <- function(features, times, responses) {
     sorted_indices <- order(times)
     features <- features[sorted_indices, ]
     times <- times[sorted_indices]
-    responses <- ifelse(responses[sorted_indices] == 1, 0, 1)
+    responses <- (ifelse(responses == 1, 0, 1))[sorted_indices]
 
     return(list(features = features, times = times, censoring = responses, sorted_indices = sorted_indices))
 }

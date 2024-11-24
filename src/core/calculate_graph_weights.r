@@ -1,14 +1,18 @@
 #Estimate S by fixing w
 CalGraphWeight <- function(features, non_repeated_features, w, k) {
     #TODO ogni transizone ha il suo w
-    mu <- 10e-4
+    #TODO rendere mu parametrizzabile
+    mu <- 1e-4
     alpha <- 1
     n <- nrow(features)
 
-    distX <- l2_distance(t(non_repeated_features), t(non_repeated_features))
+    distX <- as.matrix(dist(non_repeated_features, diag = TRUE, upper = TRUE))
+    distX <- distX * distX
 
     y <- features %*% w
-    disty <- l2_distance(t(y), t(y))
+    disty <- as.matrix(dist(y, diag = TRUE, upper = TRUE))
+    disty <- disty * disty
+
     S <- matrix(0, n, n)
     
     idx <- t(apply(mu * distX + disty, 2, order))
@@ -27,7 +31,7 @@ CalGraphWeight <- function(features, non_repeated_features, w, k) {
     }
 
     SS <- (S + t(S)) / 2
-    D <- diag(rowSums(SS))
+    D <- diag(colSums(SS))
     L <- D - SS
 
     return(list(L = L, SS = SS))
