@@ -28,10 +28,10 @@ optimize <- function(data, lambda, eta, tau, w_init) {
 
     max_iterations <- 100
 
-    gradient_history <- as.numeric(c())
+    likelihood_difference <- 0
+    likelihood_history <- as.numeric(c())
 
-    while (iterations < max_iterations && (!((iterations >= (max_iterations / 2) &&
-        abs(gradient_history[length(gradient_history)] - gradient_history[length(gradient_history) - 1]) <= 1e-6)))) {
+    while (iterations < max_iterations && (!((iterations >= (max_iterations / 2) && likelihood_difference <= 1e-6)))) {
 
         cat(sprintf("\nIteration: %d", iterations))
 
@@ -63,17 +63,18 @@ optimize <- function(data, lambda, eta, tau, w_init) {
         max_inner_iter <- 1000
 
         r_sum <- 1
-        Fzp_gamma <- 0
-        Fzp <- 1
+        likelihood_gamma <- 0
+        likelihood <- 1
 
         wzp <- NULL
 
-        while (inner_iter < max_inner_iter && (r_sum > 1e-20 && (is.nan(Fzp) || Fzp > Fzp_gamma))) {
+        while (inner_iter < max_inner_iter && 
+            (r_sum > 1e-20 && (is.nan(likelihood) || likelihood > likelihood_gamma))) {
             wzp <- l1_projection(ws - gws / gamma, lambda / gamma)
-            Fzp <- neglogparlike(wzp$z, data)
+            likelihood <- neglogparlike(wzp$z, data)
             delta_wzp <- wzp$z - ws
             r_sum <- matrix.norm(delta_wzp, type = "Frobenius") ^ 2
-            Fzp_gamma <- Fs + sum(delta_wzp * gws) + gamma / 2 * matrix.norm(delta_wzp, type = "Frobenius") ^ 2
+            likelihood_gamma <- Fs + sum(delta_wzp * gws) + gamma / 2 * matrix.norm(delta_wzp, type = "Frobenius") ^ 2
             gamma <- gamma * gamma_inc
             inner_iter <- inner_iter + 1
         }
@@ -81,12 +82,14 @@ optimize <- function(data, lambda, eta, tau, w_init) {
         wz_old <- wz
         wz <- wzp$z
 
-        gradient_history <- c(gradient_history, Fzp)
-
+        likelihood_history <- c(likelihood_history, likelihood)
+        likelihood_difference <- abs(
+            likelihood_history[length(likelihood_history)] - 
+            likelihood_history[length(likelihood_history) - 1])
         iterations <- iterations + 1
         t_old <- t
         t <- 0.5 * (1 + sqrt(1 + 4 * t^2))
     }
 
-    return(list(wzp = wzp, gradient_history = gradient_history, s = graph$SS, l = graph$L))
+    return(list(wzp = wzp, likelihood_history = likelihood_history, s = graph$SS, l = graph$L))
 }
