@@ -1,7 +1,7 @@
 library("mstate")
 
-source("./src/utils/features.r")
-source("./src/fill_dataset.r")
+source("./src/data/features.r")
+source("./src/data/fill_dataset.r")
 
 get_tmat <- function() {
     tmat <- transMat(
@@ -45,28 +45,23 @@ split_by_transition <- function(dataset, patients_count) {
 
     #Pre chemo -> Post chemo
     d <- insert_missing_patients(dataset[[1]], patients_count)
-
-    non_repeated_features <- d[c(names.radiomics_pre, names.pre_operative)]
     t1_data <- list(
         features = as.matrix(d[c(names.radiomics_pre, names.pre_operative)]),
+        new_features = list(1, length(names.radiomics_pre) + length(names.pre_operative)),
         times = as.matrix(d["time"]),
         status = as.matrix(d["status"])
     )
 
     #Post chemo -> Dead
     d <- insert_missing_patients(dataset[[2]], patients_count)
-
-    non_repeated_features <- cbind(non_repeated_features, d[c(names.radiomics_post)])
     t2_data <- list(
         features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
+        new_features = list(1, length(names.radiomics_post)),
         times = as.matrix(d["time"]),
         status = as.matrix(d["status"])
     )
 
-    return(list(
-        data = list(t1_data, t2_data),
-        non_repeated_features = as.matrix(non_repeated_features))
-    )
+    return(list(t1_data, t2_data))
 }
 
 build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {

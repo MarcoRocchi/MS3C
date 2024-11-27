@@ -27,8 +27,8 @@ CalGraphWeight <- function(features, non_repeated_features, w, k) {
         d <- (distK - distFull)
         d[d <= 0] <- 0
         d[i] <- 0
-        S[i, ] <- d
-        S[i, ] <- d / sum(d)
+        S[i, ] <- t(d)
+        S[i, ] <- t(d) / sum(d)
     }
 
     SS <- (S + t(S)) / 2

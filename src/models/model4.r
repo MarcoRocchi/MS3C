@@ -1,6 +1,5 @@
 library("mstate")
 
-#TODO replace model 4 with this
 #TODO bring all models at this architecture
 
 source("./src/utils/features.r")
@@ -92,8 +91,8 @@ split_by_transition <- function(dataset, patients_count) {
     )
 }
 
-build_m6 <- function(dataset) {
-    cat("Building model 6: Pre chemo -> Post chemo -> Relapse -> Dead with competing risk\n")
+build_m4 <- function(dataset) {
+    cat("Building model 4: Pre chemo -> Post chemo -> Relapse -> Dead with competing risk\n")
 
     data <- expand_dataset(dataset)
 

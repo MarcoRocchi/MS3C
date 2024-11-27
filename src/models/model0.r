@@ -15,8 +15,6 @@ get_tmat <- function() {
 expand_dataset <- function(dataset) {
     cat("\nBuilding long dataset for model 0")
 
-    in_state <- 1
-
     tmat <- get_tmat()
 
     data <- cbind(

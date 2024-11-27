@@ -4,7 +4,7 @@ source("./src/core/l1_projection.r")
 
 library(fastmatrix)
 
-build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
+optimize <- function(data, lambda, eta, tau, w_init) {
     features_count <- 0
     for (d in data) {
         features_count <- features_count + ncol(d$features)
@@ -28,11 +28,10 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
 
     max_iterations <- 100
 
-    #TODO
-    funcVal <- as.numeric(c())
+    gradient_history <- as.numeric(c())
 
     while (iterations < max_iterations && (!((iterations >= (max_iterations / 2) &&
-            abs(funcVal[length(funcVal)] - funcVal[length(funcVal) - 1]) <= 1e-6)))) {
+        abs(gradient_history[length(gradient_history)] - gradient_history[length(gradient_history) - 1]) <= 1e-6)))) {
 
         cat(sprintf("\nIteration: %d", iterations))
 
@@ -43,7 +42,6 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
                 
         k <- 10
 
-        all_features <- data[[1]]$features
         all_features <- all_features[data[[1]]$patients, ]
 
         for (i in 2:length(data)) {
@@ -52,6 +50,7 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
             all_features <- cbind(all_features, new_data)
         }
 
+        #TODO Naming
         graph <- CalGraphWeight(all_features, non_repeated_features, ws, k)
         
         tmp <- tau * crossprod(all_features, graph$L)
@@ -82,12 +81,12 @@ build_graph <- function(data, non_repeated_features, lambda, eta, tau, w_init) {
         wz_old <- wz
         wz <- wzp$z
 
-        funcVal <- c(funcVal, Fzp)
+        gradient_history <- c(gradient_history, Fzp)
 
         iterations <- iterations + 1
         t_old <- t
         t <- 0.5 * (1 + sqrt(1 + 4 * t^2))
     }
 
-    return(list(wzp = wzp, funcval = funcVal, s = graph$SS, l = graph$L))
+    return(list(wzp = wzp, gradient_history = gradient_history, s = graph$SS, l = graph$L))
 }

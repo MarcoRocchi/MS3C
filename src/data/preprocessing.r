@@ -9,7 +9,7 @@ preprocess <- function(dataset) {
     return(dataset)
 }
 
-preprocess_radiomics <- function(features) {
+preprocess_radiomics <- function(features) {  
     features <- scale(features)
 
     return(features)

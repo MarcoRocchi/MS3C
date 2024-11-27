@@ -48,15 +48,16 @@ compute_atrisk <- function(times) {
     return(atrisk)
 }
 
-prepare_data <- function(features, times, responses) {
-    list[features, times, censoring, sorted_indices] <- sort_times(features, times, responses)
-    frequencies <- compute_frequencies(features)
-    atrisk <- compute_atrisk(times)
-    tied <- compute_tied(times)
+prepare_data <- function(data) {
+    list[features, times, censoring, sorted_indices] <- sort_times(data$features, data$times, data$responses)
+    frequencies <- compute_frequencies(data$features)
+    atrisk <- compute_atrisk(data$times)
+    tied <- compute_tied(data$times)
 
     return(
         list(
             features = features,
+            new_features = data$new_features,
             patients = sorted_indices,
             times = times,
             censoring = censoring,

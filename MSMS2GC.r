@@ -1,14 +1,14 @@
 #TODO nomenclatura omogenea
 #TODO verificare correttezza con Matlab S2GC
-#TODO frequencies non serve
+#TODO frequencies, tied non serve
 
 Sys.setenv(LANG = "en")
 
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model0.r")
-source("./src/core/build_graph.r")
+source("./src/models/model1.r")
+source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/plot/km_plot.r")
 
@@ -23,10 +23,11 @@ dataset <- preprocess(dataset)
 dataset <- expand_dataset(dataset)
 dataset <- split_by_transition(dataset, patients_count)
 
-processed_dataset <- list()
+i <- 1
 
-for (d in dataset$data) {
-    processed_dataset[[length(processed_dataset) + 1]] <- prepare_data(d$features, d$times, d$status)
+for (d in dataset) {
+    dataset[[i]] <- prepare_data(d)
+    i <- i + 1
 }
 
 cat("\nBuilding similarity graph")
@@ -54,12 +55,12 @@ tau <- 10
 #    }
 #}
 
-result <- build_graph(processed_dataset, dataset$non_repeated_features, lambda, eta, tau)
+result <- optimize(dataset, lambda, eta, tau)
 
 cat("\nPerforming spectral clustering")
 optimal_clusters_number <- sum(eigen(result$l, only.values = TRUE)$values < 1e-10)
 cat(sprintf("\nOptimal clusters number: %d", optimal_clusters_number))
-clusters <- spectral_clustering(result$s, 4)
+clusters <- spectral_clustering(result$s, 2)
 
 #TODO
 #plot_clusters(dataset$non_repeated_features, times, responses, clusters$group)
