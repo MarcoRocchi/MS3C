@@ -47,7 +47,8 @@ split_by_transition <- function(dataset, patients_count) {
     d <- insert_missing_patients(dataset[[1]], patients_count)
     t1_data <- list(
         features = as.matrix(d[c(names.radiomics_pre, names.pre_operative)]),
-        new_features = list(1, length(names.radiomics_pre) + length(names.pre_operative)),
+        #TODO riportare modifica su tutti i modelli
+        new_features = 1:(length(names.radiomics_pre) + length(names.pre_operative)),
         times = as.matrix(d["time"]),
         status = as.matrix(d["status"])
     )
@@ -56,7 +57,7 @@ split_by_transition <- function(dataset, patients_count) {
     d <- insert_missing_patients(dataset[[2]], patients_count)
     t2_data <- list(
         features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
-        new_features = list(1, length(names.radiomics_post)),
+        new_features = 1:length(names.radiomics_post),
         times = as.matrix(d["time"]),
         status = as.matrix(d["status"])
     )

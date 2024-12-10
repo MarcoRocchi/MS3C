@@ -1,6 +1,6 @@
-#responses: a boolean array of the same size as Y that is 1 for
-# observations that are right-censored and 0 for
-# observations that are observed exactly
+#responses: a boolean array of the same size as Y that is:
+# 1 for observations that are right-censored
+# 0 for observations that are observed exactly
 sort_times <- function(features, times, responses) {
     sorted_indices <- order(times)
     features <- features[sorted_indices, ]
@@ -49,7 +49,7 @@ compute_atrisk <- function(times) {
 }
 
 prepare_data <- function(data) {
-    list[features, times, censoring, sorted_indices] <- sort_times(data$features, data$times, data$responses)
+    list[features, times, censoring, sorted_indices] <- sort_times(data$features, data$times, data$status)
     frequencies <- compute_frequencies(data$features)
     atrisk <- compute_atrisk(data$times)
     tied <- compute_tied(data$times)
