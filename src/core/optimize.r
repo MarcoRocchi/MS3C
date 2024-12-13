@@ -82,9 +82,9 @@ optimize <- function(data, n, lambda, eta, tau, w_init) {
         graph <- estimate_similarity(data, n, ws, k)
 
         for (i in 1:length(data)) {
-            #TODO weights
             features <- data[[i]]$features[data[[i]]$patients, ]
-            gws[[i]] <- gws[[i]] + tau * crossprod(features, graph$L) %*% (features %*% ws[[i]])
+            transition_weight <- data[[i]]$transition_weight
+            gws[[i]] <- gws[[i]] + tau * transition_weight * crossprod(features, graph$L) %*% (features %*% ws[[i]])
         }
 
         list[wzp, gamma, likelihood] <- inner_loop(data, ws, gws, lambda, gamma, gamma_inc, likelihood_cox)        

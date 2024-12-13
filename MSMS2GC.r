@@ -11,6 +11,7 @@ source("./src/models/model0.r")
 source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/plot/km_plot.r")
+source("./src/validation/concordance.r")
 
 library(mstate)
 library(dplyr)
@@ -41,23 +42,28 @@ candidate_lambda <- list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)
 candidate_eta <- list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)
 candidate_tau <- list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)
 
-for (a in candidate_lambda){
-    for (b in candidate_eta) {
-        for (c in candidate_tau) {
-            result <- build_graph(processed_dataset, dataset$non_repeated_features, a, b, c)
-            if (sum(eigen(result$l, only.values = TRUE)$values < 1e-10) > maximum_value) {
-                maximum_value <- sum(eigen(result$l, only.values = TRUE)$values < 1e-10)
-                l_opt <- a
-                e_opt <- b
-                t_opt <- c
+search_optimal_parameters <- FALSE
+
+if (search_optimal_parameters) {
+    for (a in candidate_lambda){
+        for (b in candidate_eta) {
+            for (c in candidate_tau) {
+                result <- optimize(dataset, patients_count, a, b, c)
+                current_concordance <- concordance_index(dataset, result$weights, patients_count)
+                if (current_concordance > maximum_value) {
+                    maximum_value <- current_concordance
+                    l_opt <- a
+                    e_opt <- b
+                    t_opt <- c
+                }
             }
         }
     }
 }
 
-lambda <- 1
-eta <- 0.1
-tau <- 10
+lambda <- 0.5
+eta <- 0.01
+tau <- 1.5
 
 result <- optimize(dataset, patients_count, lambda, eta, tau)
 

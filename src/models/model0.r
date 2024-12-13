@@ -43,7 +43,8 @@ split_by_transition <- function(dataset, patients_count) {
         features = as.matrix(d[names.radiomics_pre]),
         new_features = 1:(length(names.radiomics_pre)),
         times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
+        status = as.matrix(d["status"]),
+        transition_coefficient = 1
     )
 
     return(list(t1_data))
