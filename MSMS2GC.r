@@ -1,6 +1,6 @@
 #TODO nomenclatura omogenea
-#TODO verificare correttezza con Matlab S2GC
 #TODO frequencies, tied non serve
+#TODO verificare meccanismo ordinamento individui
 
 Sys.setenv(LANG = "en")
 
@@ -38,14 +38,14 @@ e_opt <- 0
 t_opt <- 0
 maximum_value <- 0
 
-candidate_lambda <- list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)
-candidate_eta <- list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)
-candidate_tau <- list(0.01, 0.1, 0.5, 1, 1.5, 5, 10)
+candidate_lambda <- list(0.05, 0.5, 1, 1.5, 2.5, 3.5)
+candidate_eta <- list(0.001, 0.01, 0.1, 0.5)
+candidate_tau <- list(0.5, 1, 3, 4, 5, 6, 7, 10)
 
 search_optimal_parameters <- FALSE
 
 if (search_optimal_parameters) {
-    for (a in candidate_lambda){
+    for (a in candidate_lambda) {
         for (b in candidate_eta) {
             for (c in candidate_tau) {
                 result <- optimize(dataset, patients_count, a, b, c)
@@ -61,9 +61,9 @@ if (search_optimal_parameters) {
     }
 }
 
-lambda <- 0.5
+lambda <- 2.5
 eta <- 0.01
-tau <- 1.5
+tau <- 5
 
 result <- optimize(dataset, patients_count, lambda, eta, tau)
 

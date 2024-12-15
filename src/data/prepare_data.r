@@ -50,9 +50,9 @@ compute_atrisk <- function(times) {
 
 prepare_data <- function(data) {
     list[features, times, censoring, sorted_indices] <- sort_times(data$features, data$times, data$status)
-    frequencies <- compute_frequencies(data$features)
-    atrisk <- compute_atrisk(data$times)
-    tied <- compute_tied(data$times)
+    frequencies <- compute_frequencies(features)
+    atrisk <- compute_atrisk(times)
+    tied <- compute_tied(times)
 
     return(
         list(

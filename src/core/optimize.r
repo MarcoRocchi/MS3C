@@ -83,7 +83,9 @@ optimize <- function(data, n, lambda, eta, tau, w_init) {
 
         for (i in 1:length(data)) {
             features <- data[[i]]$features[data[[i]]$patients, ]
-            transition_weight <- data[[i]]$transition_weight
+            #TODO
+            #transition_weight <- data[[i]]$transition_weight
+            transition_weight <- 1
             gws[[i]] <- gws[[i]] + tau * transition_weight * crossprod(features, graph$L) %*% (features %*% ws[[i]])
         }
 
