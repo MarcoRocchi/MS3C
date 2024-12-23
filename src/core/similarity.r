@@ -11,13 +11,12 @@ compute_distance <- function(data) {
     return(as.matrix(dist(features, diag = TRUE, upper = TRUE)))
 }
 
-compute_survival_distance <- function(data, w, n) {
+compute_risk_distance <- function(data, w, n) {
     y <- matrix(0, n, 1)
 
     for (i in 1:length(data)) {
         order <- data[[i]]$patients
-        #TODO multiply by weight
-        y <- y + (data[[i]]$features[order, ] %*% w[[i]])
+        y <- y + (data[[i]]$transition_weight * data[[i]]$features[order, ] %*% w[[i]])
     }
 
     return(as.matrix(dist(y, diag = TRUE, upper = TRUE)))
@@ -32,19 +31,19 @@ estimate_similarity <- function(data, n, w, k) {
     patient_distances <- compute_distance(data)
     patient_distances <- patient_distances * patient_distances
 
-    survival_distances <- compute_survival_distance(data, w, n)
-    survival_distances <- survival_distances * survival_distances
+    risk_distances <- compute_risk_distance(data, w, n)
+    risk_distances <- risk_distances * risk_distances
 
     S <- matrix(0, n, n)
     
-    idx <- t(apply(mu * patient_distances + survival_distances, 2, order))
+    idx <- t(apply(mu * patient_distances + risk_distances, 2, order))
         
     for (i in 1:n) {
         idxa0 <- t(idx[i, 2:(k + 1)])
-        dfi <- t(survival_distances[i, idxa0])
+        dfi <- t(risk_distances[i, idxa0])
         dxi <- t(patient_distances[i, idxa0])
         distk <- sum((mu * dxi + dfi) / alpha) / k
-        distance <- t(mu * patient_distances[i, ] + survival_distances[i, ])
+        distance <- t(mu * patient_distances[i, ] + risk_distances[i, ])
         d <- (distk - distance)
         d[d <= 0] <- 0
         d[i] <- 0
@@ -52,6 +51,8 @@ estimate_similarity <- function(data, n, w, k) {
         S[i, ] <- d / sum(d)
     }
 
+    #TODO
+    S <- signif(S, 7)
     SS <- (S + t(S)) / 2
     D <- diag(colSums(SS))
     L <- D - SS

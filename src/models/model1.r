@@ -50,7 +50,8 @@ split_by_transition <- function(dataset, patients_count) {
         #TODO riportare modifica su tutti i modelli
         new_features = 1:(length(names.radiomics_pre) + length(names.pre_operative)),
         times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
+        status = as.matrix(d["status"]),
+        transition_weight = 1
     )
 
     #Post chemo -> Dead
@@ -59,7 +60,8 @@ split_by_transition <- function(dataset, patients_count) {
         features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
         new_features = 1:length(names.radiomics_post),
         times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
+        status = as.matrix(d["status"]),
+        transition_weight = 1
     )
 
     return(list(t1_data, t2_data))

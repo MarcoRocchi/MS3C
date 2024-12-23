@@ -13,13 +13,11 @@ compute_log_likelihood <- function(w, data) {
         risksum <- risksum[d$atrisk]
 
         p <- ncol(d$features)
-        #TODO Errore massimo 1e-14
         xr <- d$features * kronecker(matrix(1, 1, p), r * d$frequencies)
         revxr <- xr[nrow(xr):1, ]
         xrsum <- apply(revxr, 2, cumsum)
         xrsum <- xrsum[nrow(xrsum):1, ]
         xrsum <- xrsum[d$atrisk, ]
-        #Errore massimo 1e-12
         a <- xrsum / kronecker(matrix(1, 1, p), risksum)
         obsfreq <- d$frequencies * as.numeric((!d$censoring))
         dl[[i]] <- -t(t(obsfreq) %*% (d$features - a))

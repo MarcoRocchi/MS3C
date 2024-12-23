@@ -43,10 +43,7 @@ concordance_index <- function(data, weights, patients_count) {
                 }
             }
         }
-
-        c <- concordant / (concordant + discordant)
-        concordance <- concordance + c
     }
 
-    return(concordance)
+    return(concordant / (concordant + discordant))
 }

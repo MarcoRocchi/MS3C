@@ -1,7 +1,7 @@
 #TODO nomenclatura omogenea
 #TODO frequencies, tied non serve
 #TODO verificare meccanismo ordinamento individui
-
+#TODO Test logrank (anche tempo all'evento)
 Sys.setenv(LANG = "en")
 
 source("./src/data/load_data.r")
@@ -21,8 +21,8 @@ dataset <- load_data()
 patients_count <- dataset$patients_count
 dataset <- preprocess(dataset)
 
-dataset <- expand_dataset(dataset)
-dataset <- split_by_transition(dataset, patients_count)
+mstate_dataset <- expand_dataset(dataset)
+dataset <- split_by_transition(mstate_dataset, patients_count)
 
 i <- 1
 
@@ -61,9 +61,9 @@ if (search_optimal_parameters) {
     }
 }
 
-lambda <- 2.5
-eta <- 0.01
-tau <- 5
+lambda <- 0.05
+eta <- 0.001
+tau <- 3
 
 result <- optimize(dataset, patients_count, lambda, eta, tau)
 

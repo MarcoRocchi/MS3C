@@ -63,7 +63,8 @@ prepare_data <- function(data) {
             censoring = censoring,
             frequencies = frequencies,
             atrisk = atrisk,
-            tied = tied
+            tied = tied,
+            transition_weight = data$transition_weight
         )
     )    
 }
