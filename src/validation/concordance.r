@@ -1,3 +1,5 @@
+#Tied?
+
 concordance_index <- function(data, weights, patients_count) {
     concordance <- 0
 

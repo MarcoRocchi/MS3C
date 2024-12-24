@@ -1,4 +1,3 @@
-#TODO nomenclatura omogenea
 #TODO frequencies, tied non serve
 #TODO verificare meccanismo ordinamento individui
 #TODO Test logrank (anche tempo all'evento)
@@ -7,7 +6,7 @@ Sys.setenv(LANG = "en")
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model0.r")
+source("./src/models/model1.r")
 source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/plot/km_plot.r")
@@ -61,9 +60,7 @@ if (search_optimal_parameters) {
     }
 }
 
-lambda <- 0.05
-eta <- 0.001
-tau <- 3
+list[lambda, eta, tau] <- get_optimal_parameters()
 
 result <- optimize(dataset, patients_count, lambda, eta, tau)
 
@@ -72,6 +69,5 @@ optimal_clusters_number <- sum(eigen(result$L, only.values = TRUE)$values < 1e-1
 cat(sprintf("\nOptimal clusters number: %d", optimal_clusters_number))
 clusters <- spectral_clustering(result$S, 2)
 
-#TODO
 #plot_clusters(dataset$non_repeated_features, times, responses, clusters$group)
 cat("\nEnd")

@@ -3,6 +3,10 @@ library("mstate")
 source("./src/data/features.r")
 source("./src/data/fill_dataset.r")
 
+get_optimal_parameters <- function() {
+    return(list(lambda = 0.05, eta = 0.001, tau = 3))
+}
+
 get_tmat <- function() {
     tmat <- transMat(
         x = list(c(2), c(3), c()), 

@@ -24,7 +24,6 @@ compute_risk_distance <- function(data, w, n) {
 
 #Estimate S by fixing w
 estimate_similarity <- function(data, n, w, k) {
-    #TODO rendere mu parametrizzabile
     mu <- 1e-3
     alpha <- 1
 

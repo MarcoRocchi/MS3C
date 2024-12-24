@@ -61,21 +61,21 @@ names.radiomics_post <- c(
 names.pre_operative <- c(
     "AGE" = "CA",
     "N mtx" = "CB",
-    "M" = "CC",
-    "F" = "CD",
-    "synchronous" = "CE",
-    "metachronous" = "CF",
-    "sì" = "CG",
-    "no" = "CH"
+    "SEX_1" = "CC",
+    "SEX_2" = "CD",
+    "Sinc 1/Meta 2_1" = "CE",
+    "Sinc 1/Meta 2_2" = "CF",
+    "extrahep_1" = "CG",
+    "extrahep_2" = "CH"
 )
 
 names.surgery <- c(
-    "morb severa sì" = "DA",
-    "morb severa no" = "DB",
-    "Infective morbidity sì" = "DC",
-    "Infective morbidity no" = "DD",
-    "r0 = Margine almeno 1 mm sì" = "DE",
-    "r0 = Margine almeno 1 mm no" = "DF"
+    "Morb severa_1" = "DA",
+    "Morb severa_2" = "DB",
+    "Infective morbidity_1" = "DC",
+    "Infective morbidity_2" = "DD",
+    "r0 = Margine almeno 1 mm_1" = "DE",
+    "r0 = Margine almeno 1 mm_2" = "DF"
 )
 
 names.relapse_indicator <- "Recidiva (0/1)"

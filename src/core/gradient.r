@@ -1,7 +1,6 @@
 source("./src/core/cox.r")
 
-#TODO nome
-compute_log_likelihood <- function(w, data) {
+compute_gradient <- function(w, data) {
     dl <- c()
 
     for (i in 1:length(data)) {
@@ -27,7 +26,7 @@ compute_log_likelihood <- function(w, data) {
 }
 
 evaluate_gradient <- function(data, w, eta) {
-    gradient <- compute_log_likelihood(w, data)
+    gradient <- compute_gradient(w, data)
     likelihood <- neglogparlike(w, data)
 
     return(list(gradient = gradient, likelihood = likelihood))
