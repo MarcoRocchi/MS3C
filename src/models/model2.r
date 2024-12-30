@@ -3,6 +3,10 @@ library("mstate")
 source("./src/data/features.r")
 source("./src/data/fill_dataset.r")
 
+get_optimal_parameters <- function() {
+    return(list(lambda = 0.05, eta = 0.001, tau = 3))
+}
+
 get_tmat <- function() {
     tmat <- transMat(
         x = list(c(2), c(3), c()), 
@@ -45,31 +49,30 @@ split_by_transition <- function(dataset, patients_count) {
 
     #Pre chemo -> Post chemo
     d <- insert_missing_patients(dataset[[1]], patients_count)
-
     non_repeated_features <- d[c(names.radiomics_pre, names.pre_operative)]
     t1_data <- list(
         features = as.matrix(d[c(names.radiomics_pre, names.pre_operative)]),
+        new_features = 1:(length(names.radiomics_pre) + length(names.pre_operative)),
         times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
+        status = as.matrix(d["status"]),
+        transition_weight = 1
     )
 
     #Post chemo -> Relapse
     d <- insert_missing_patients(dataset[[2]], patients_count)
-
     non_repeated_features <- cbind(non_repeated_features, d[c(names.radiomics_post)])
     t2_data <- list(
         features = as.matrix(d[c(names.radiomics_post, names.pre_operative)]),
+        new_features = 1:length(names.radiomics_post),        
         times = as.matrix(d["time"]),
-        status = as.matrix(d["status"])
+        status = as.matrix(d["status"]),
+        transition_weight = 1
     )
 
-    return(list(
-        data = list(t1_data, t2_data),
-        non_repeated_features = as.matrix(non_repeated_features))
-    )
+    return(list(t1_data, t2_data))
 }
 
-build_m2 <- function(pre, post, preop, relapse_status, post_times, relapse_times) {
+build_model <- function(pre, post, preop, relapse_status, post_times, relapse_times) {
     cat("Building model 2: Pre chemo -> Post chemo -> Relapse\n")
 
     in_state <- 1

@@ -50,7 +50,6 @@ estimate_similarity <- function(data, n, w, k) {
         S[i, ] <- d / sum(d)
     }
 
-    #TODO
     S <- signif(S, 7)
     SS <- (S + t(S)) / 2
     D <- diag(colSums(SS))

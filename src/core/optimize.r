@@ -8,6 +8,7 @@ initialize_null <- function(data) {
     result <- list()    
 
     for (i in 1:length(data)) {
+        d <- data[[i]]
         result[[i]] <- matrix(0, ncol(d$features), 1)
     }
 

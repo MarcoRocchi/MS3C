@@ -7,7 +7,7 @@ sort_times <- function(features, times, responses) {
     times <- times[sorted_indices]
     responses <- (ifelse(responses == 1, 0, 1))[sorted_indices]
 
-    return(list(features = features, times = times, censoring = responses, sorted_indices = sorted_indices))
+    return(list(features = features, times = times, censoring = responses, sorted_indices = order(sorted_indices)))
 }
 
 compute_tied <- function(times) {

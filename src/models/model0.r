@@ -54,7 +54,6 @@ split_by_transition <- function(dataset, patients_count) {
     return(list(t1_data))
 }
 
-
 build_model <- function(dataset) {
     cat("Building model 0: Pre chemo -> Relapse\n")
 

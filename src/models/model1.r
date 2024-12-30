@@ -51,7 +51,6 @@ split_by_transition <- function(dataset, patients_count) {
     d <- insert_missing_patients(dataset[[1]], patients_count)
     t1_data <- list(
         features = as.matrix(d[c(names.radiomics_pre, names.pre_operative)]),
-        #TODO riportare modifica su tutti i modelli
         new_features = 1:(length(names.radiomics_pre) + length(names.pre_operative)),
         times = as.matrix(d["time"]),
         status = as.matrix(d["status"]),
@@ -71,29 +70,14 @@ split_by_transition <- function(dataset, patients_count) {
     return(list(t1_data, t2_data))
 }
 
-build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {
+build_model <- function(dataset) {
     cat("Building model 1: Pre chemo -> Post chemo -> Dead\n")
 
-    in_state <- 1
-
-    data <- cbind(pre, post, preop, dead_status, post_times, dead_times, in_state)
-
-    tmat <- transMget_tmat()
+    tmat <- get_tmat()
 
     print(tmat)
 
-    data_long <- msprep(time = c(NA, names.post_time, names.dead_time),
-                        status = c(NA, "in_state", names.dead_indicator),
-                        data = data,
-                        trans = tmat,
-                        keep = c(names.radiomics_pre, names.radiomics_post, names.pre_operative))
-
-    data_long <- expand.covs(data_long, 
-                            c(names.radiomics_pre, names.radiomics_post, names.pre_operative), 
-                            append = TRUE,
-                            longnames = FALSE)
-
-    print(events(data_long))
+    print(events(dataset))
 
     model <- coxph(Surv(Tstart, Tstop, status) ~
         AAA.1 + AAB.1 + AAC.1 + AAD.1 + AAE.1 + AAF.1 + AAG.1 + AAH.1 + AAI.1 + AAJ.1 + AAK.1 + AAL.1 + AAM.1 + AAN.1 +
@@ -103,7 +87,7 @@ build_m1 <- function(pre, post, preop, dead_status, post_times, dead_times) {
         CA.1 + CB.1 + CC.1 + CD.1 + CE.1 + CF.1 + CG.1 + CH.1 +
         CA.2 + CB.2 + CC.2 + CD.2 + CE.2 + CF.2 + CG.2 + CH.2 +
         strata(trans),
-        data = data_long
+        data = dataset
     )
     
     print(cox.zph(model))

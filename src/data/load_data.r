@@ -56,6 +56,8 @@ load_data <- function() {
 
     relapse_times <- as.matrix((times["Delta pre post"] + times["Delta post surgery"] + dfs["DFS"]) / 12)
     dimnames(relapse_times) <- list(NULL, names.relapse_time)
+    surgery_times <- as.matrix((times["Delta pre post"] + times["Delta post surgery"]) / 12)
+    dimnames(surgery_times) <- list(NULL, names.surgery_time)
     dead_times <- as.matrix((times["Delta pre post"] + times["Delta post surgery"] + os["OS"]) / 12)
     dimnames(dead_times) <- list(NULL, names.dead_time)
 
@@ -73,6 +75,7 @@ load_data <- function() {
         relapse_status = relapse_status,
         dead_status = dead_status,
         relapse_times = relapse_times,
+        surgery_times = surgery_times,
         dead_times = dead_times,
         post_times = post_times,
         surgery_times = surgery_times)

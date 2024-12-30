@@ -10,15 +10,7 @@
             "request": "launch",
             "debugMode": "file",
             "workingDirectory": "${workspaceFolder}",
-            "file": "MSMS2GC.r"
-        },
-        {
-            "type": "R-Debugger",
-            "name": "MSMs",
-            "request": "launch",
-            "debugMode": "file",
-            "workingDirectory": "${workspaceFolder}",
-            "file": "msm.r"
+            "file": "main.r"
         },
         {
             "type": "R-Debugger",

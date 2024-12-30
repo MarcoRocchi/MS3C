@@ -1,15 +1,12 @@
-#TODO frequencies, tied non serve
-#TODO verificare meccanismo ordinamento individui
 #TODO Test logrank (anche tempo all'evento)
 Sys.setenv(LANG = "en")
 
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model1.r")
+source("./src/models/model4.r")
 source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
-source("./src/plot/km_plot.r")
 source("./src/validation/concordance.r")
 
 library(mstate)
@@ -64,10 +61,11 @@ list[lambda, eta, tau] <- get_optimal_parameters()
 
 result <- optimize(dataset, patients_count, lambda, eta, tau)
 
+cat("\nConcordance:", concordance_index(dataset, result$weights, patients_count))
+
 cat("\nPerforming spectral clustering")
 optimal_clusters_number <- sum(eigen(result$L, only.values = TRUE)$values < 1e-10)
 cat(sprintf("\nOptimal clusters number: %d", optimal_clusters_number))
 clusters <- spectral_clustering(result$S, 2)
 
-#plot_clusters(dataset$non_repeated_features, times, responses, clusters$group)
 cat("\nEnd")
