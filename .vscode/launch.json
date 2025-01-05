@@ -14,6 +14,14 @@
         },
         {
             "type": "R-Debugger",
+            "name": "Optimal parameters",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "optimal_parameters.r"
+        },
+        {
+            "type": "R-Debugger",
             "name": "Current file",
             "request": "launch",
             "debugMode": "file",

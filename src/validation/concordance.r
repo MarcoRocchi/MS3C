@@ -8,7 +8,7 @@ concordance_index <- function(data, weights, patients_count) {
 
         for (a in 1:patients_count) {
             for (b in a:patients_count) {
-                if (a != b) {
+                if (a != b && d$times[a] != d$times[b]) {
                     if (d$censoring[a] == 0 && d$censoring[b] == 0) {
                         #Not censored
                         if ((risks[a] > risks[b] && d$times[a] < d$times[b]) || 

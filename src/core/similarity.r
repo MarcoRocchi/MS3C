@@ -23,10 +23,7 @@ compute_risk_distance <- function(data, w, n) {
 }
 
 #Estimate S by fixing w
-estimate_similarity <- function(data, n, w, k) {
-    mu <- 1e-3
-    alpha <- 1
-
+estimate_similarity <- function(data, n, w, mu, k) {
     patient_distances <- compute_distance(data)
     patient_distances <- patient_distances * patient_distances
 
@@ -41,16 +38,14 @@ estimate_similarity <- function(data, n, w, k) {
         idxa0 <- t(idx[i, 2:(k + 1)])
         dfi <- t(risk_distances[i, idxa0])
         dxi <- t(patient_distances[i, idxa0])
-        distk <- sum((mu * dxi + dfi) / alpha) / k
+        distk <- sum(mu * dxi + dfi) / k
         distance <- t(mu * patient_distances[i, ] + risk_distances[i, ])
         d <- (distk - distance)
         d[d <= 0] <- 0
         d[i] <- 0
-        S[i, ] <- d
         S[i, ] <- d / sum(d)
     }
 
-    S <- signif(S, 7)
     SS <- (S + t(S)) / 2
     D <- diag(colSums(SS))
     L <- D - SS

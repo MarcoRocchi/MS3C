@@ -1,4 +1,4 @@
-source("./src/core/gradient.r")
+source("./src/core/cox.r")
 source("./src/core/similarity.r")
 source("./src/core/l1_projection.r")
 
@@ -15,7 +15,7 @@ initialize_null <- function(data) {
     return(result)
 }
 
-inner_loop <- function(data, ws, gws, lambda, gamma, gamma_inc, likelihood_cox) {
+inner_loop <- function(data, ws, gws, eta, gamma, gamma_inc, likelihood_cox) {
     inner_iter <- 0
     max_inner_iter <- 1000
 
@@ -29,7 +29,7 @@ inner_loop <- function(data, ws, gws, lambda, gamma, gamma_inc, likelihood_cox) 
         total_penalty <- 0
 
         for (i in 1:length(data)) {
-            wzp[[i]] <- l1_projection(ws[[i]] - gws[[i]] / gamma, lambda / gamma)
+            wzp[[i]] <- l1_projection(ws[[i]] - gws[[i]] / gamma, eta / gamma)
         }    
 
         likelihood <- neglogparlike(lapply(wzp, function(x) lapply(x, return(x$z))), data)
@@ -49,7 +49,7 @@ inner_loop <- function(data, ws, gws, lambda, gamma, gamma_inc, likelihood_cox) 
     return(list(wzp, gamma, likelihood))
 }
 
-optimize <- function(data, n, lambda, eta, tau, w_init) {
+optimize <- function(data, n, eta, tau, mu, k) {
     wz <- initialize_null(data)
     wz_old <- initialize_null(data)
     ws <- initialize_null(data)
@@ -82,11 +82,9 @@ optimize <- function(data, n, lambda, eta, tau, w_init) {
             ws[[i]] <- (1 + alpha) * wz[[i]] - alpha * wz_old[[i]]
         }
 
-        list[gws, likelihood_cox] <- evaluate_gradient(data, ws, eta)
+        list[gws, likelihood_cox] <- evaluate_gradient(data, ws)
                 
-        k <- 10
-
-        graph <- estimate_similarity(data, n, ws, k)
+        graph <- estimate_similarity(data, n, ws, mu, k)
 
         for (i in 1:length(data)) {
             features <- data[[i]]$features[data[[i]]$patients, ]
@@ -94,7 +92,7 @@ optimize <- function(data, n, lambda, eta, tau, w_init) {
             gws[[i]] <- gws[[i]] + tau * transition_weight * crossprod(features, graph$L) %*% (features %*% ws[[i]])
         }
 
-        list[wzp, gamma, likelihood] <- inner_loop(data, ws, gws, lambda, gamma, gamma_inc, likelihood_cox)        
+        list[wzp, gamma, likelihood] <- inner_loop(data, ws, gws, eta, gamma, gamma_inc, likelihood_cox)        
 
         for (i in 1:length(data)) {
             wz_old[[i]] <- wz[[i]]

@@ -4,7 +4,7 @@ source("./src/data/features.r")
 source("./src/data/fill_dataset.r")
 
 get_optimal_parameters <- function() {
-    return(list(lambda = 0.05, eta = 0.001, tau = 3))
+    return(list(eta = 0.0005, tau = 2))
 }
 
 get_tmat <- function() {
