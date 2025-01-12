@@ -15,7 +15,7 @@ initialize_null <- function(data) {
     return(result)
 }
 
-inner_loop <- function(data, ws, gws, eta, gamma, gamma_inc, likelihood_cox) {
+inner_loop <- function(data, ws, gws, eta, tau, tau_inc, likelihood_cox) {
     inner_iter <- 0
     max_inner_iter <- 1000
 
@@ -29,7 +29,7 @@ inner_loop <- function(data, ws, gws, eta, gamma, gamma_inc, likelihood_cox) {
         total_penalty <- 0
 
         for (i in 1:length(data)) {
-            wzp[[i]] <- l1_projection(ws[[i]] - gws[[i]] / gamma, eta / gamma)
+            wzp[[i]] <- l1_projection(ws[[i]] - gws[[i]] / tau, eta / tau)
         }    
 
         likelihood <- neglogparlike(lapply(wzp, function(x) lapply(x, return(x$z))), data)
@@ -37,19 +37,19 @@ inner_loop <- function(data, ws, gws, eta, gamma, gamma_inc, likelihood_cox) {
         for (i in 1:length(data))  {
             delta_wzp <- wzp[[i]]$z - ws[[i]]
             r_sum <- matrix.norm(delta_wzp, type = "Frobenius") ^ 2
-            penalty <- sum(delta_wzp * gws[[i]]) + gamma / 2 * matrix.norm(delta_wzp, type = "Frobenius") ^ 2
+            penalty <- sum(delta_wzp * gws[[i]]) + tau / 2 * matrix.norm(delta_wzp, type = "Frobenius") ^ 2
             total_penalty <- total_penalty + penalty
         }
 
         likelihood_gamma <- likelihood_cox + total_penalty
-        gamma <- gamma * gamma_inc
+        tau <- tau * tau_inc
         inner_iter <- inner_iter + 1
     }
 
-    return(list(wzp, gamma, likelihood))
+    return(list(wzp, tau, likelihood))
 }
 
-optimize <- function(data, n, eta, tau, mu, k) {
+optimize <- function(data, n, eta, gamma, mu, k) {
     wz <- initialize_null(data)
     wz_old <- initialize_null(data)
     ws <- initialize_null(data)
@@ -57,8 +57,8 @@ optimize <- function(data, n, eta, tau, mu, k) {
     t <- 1
     t_old <- 0
 
-    gamma <- 1
-    gamma_inc <- 2
+    tau <- 1
+    tau_inc <- 2
 
     epochs <- 0
     max_epochs <- 1000
@@ -71,8 +71,6 @@ optimize <- function(data, n, eta, tau, mu, k) {
     not_improving <- 0
 
     while (epochs < max_epochs && not_improving < 10) {
-        cat(sprintf("\nEpoch: %d", epochs))
-
         alpha <- (t_old - 1) / t
         if (alpha > 0) {
             alpha <- -log(alpha)
@@ -86,13 +84,15 @@ optimize <- function(data, n, eta, tau, mu, k) {
                 
         graph <- estimate_similarity(data, n, ws, mu, k)
 
+        hy <- gamma * mu
+
         for (i in 1:length(data)) {
             features <- data[[i]]$features[data[[i]]$patients, ]
             transition_weight <- data[[i]]$transition_weight
-            gws[[i]] <- gws[[i]] + tau * transition_weight * crossprod(features, graph$L) %*% (features %*% ws[[i]])
+            gws[[i]] <- gws[[i]] + hy * transition_weight * crossprod(features, graph$L) %*% (features %*% ws[[i]])
         }
 
-        list[wzp, gamma, likelihood] <- inner_loop(data, ws, gws, eta, gamma, gamma_inc, likelihood_cox)        
+        list[wzp, tau, likelihood] <- inner_loop(data, ws, gws, eta, tau, tau_inc, likelihood_cox)        
 
         for (i in 1:length(data)) {
             wz_old[[i]] <- wz[[i]]

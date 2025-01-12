@@ -14,11 +14,19 @@
         },
         {
             "type": "R-Debugger",
-            "name": "Optimal parameters",
+            "name": "Optimize concordance",
             "request": "launch",
             "debugMode": "file",
             "workingDirectory": "${workspaceFolder}",
-            "file": "optimal_parameters.r"
+            "file": "optimize_by_concordance.r"
+        },
+        {
+            "type": "R-Debugger",
+            "name": "Optimize logrank",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "optimize_by_logrank.r"
         },
         {
             "type": "R-Debugger",

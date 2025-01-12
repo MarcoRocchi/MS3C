@@ -1,11 +1,9 @@
-#TODO tau è gamma
-
 Sys.setenv(LANG = "en")
 
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model0.r")
+source("./src/models/model4.r")
 source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/validation/concordance.r")
@@ -30,8 +28,8 @@ for (d in dataset) {
 }
 
 cat("\nBuilding similarity graph")
-list[eta, tau, mu, k] <- get_optimal_parameters()
-result <- optimize(dataset, patients_count, eta, tau, mu, k)
+list[eta, gamma, mu, k] <- get_optimal_parameters()
+result <- optimize(dataset, patients_count, eta, gamma, mu, k)
 cat("\nConcordance:", concordance_index(dataset, result$weights, patients_count))
 
 cat("\nPerforming spectral clustering")
@@ -39,6 +37,7 @@ optimal_clusters_number <- sum(eigen(result$L, only.values = TRUE)$values < 1e-1
 cat(sprintf("\nOptimal clusters number: %d", optimal_clusters_number))
 clusters <- spectral_clustering(result$S, optimal_clusters_number)
 
-logrank(mstate_dataset, clusters$group, length(dataset), 2, patients_count)
+cat("\nComputing clustering logrank\n")
+print(logrank(mstate_dataset, clusters$group))
 
 cat("\nEnd")

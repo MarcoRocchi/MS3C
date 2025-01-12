@@ -1,4 +1,6 @@
 discretisation <- function(EigenVectors) {
+    #TODO
+    EigenVectors[is.na(EigenVectors)] <- 0
     n <- nrow(EigenVectors)
     k <- ncol(EigenVectors)
     

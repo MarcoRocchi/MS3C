@@ -4,7 +4,7 @@ source("./src/data/features.r")
 source("./src/data/fill_dataset.r")
 
 get_optimal_parameters <- function() {
-    return(list(eta = 0.0005, tau = 2, k = 3))
+    return(list(eta = 0.1, gamma = 2000, mu = 0.001, k = 5))
 }
 
 get_tmat <- function() {
@@ -59,7 +59,7 @@ build_model <- function(dataset) {
 
     print(events(dataset))
 
-    model <- coxph(Surv(Tstart, Tstop, status) ~
+    model <- coxph(Surv(time, status) ~
         AAA + AAB + AAC + AAD + AAE + AAF + AAG + AAH + AAI + AAJ + AAK + AAL + AAM + 
         AAN + AAO + AAP + AAQ + AAR + AAS + AAT + AAU + AAV + AAW + AAX + AAY + AAZ + ABA,
         data = dataset)
