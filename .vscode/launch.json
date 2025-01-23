@@ -14,6 +14,14 @@
         },
         {
             "type": "R-Debugger",
+            "name": "Grid search",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "grid_search.r"
+        },
+        {
+            "type": "R-Debugger",
             "name": "Optimize concordance",
             "request": "launch",
             "debugMode": "file",
@@ -27,6 +35,30 @@
             "debugMode": "file",
             "workingDirectory": "${workspaceFolder}",
             "file": "optimize_by_logrank.r"
+        },
+        {
+            "type": "R-Debugger",
+            "name": "Optimize AUC",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "optimize_by_AUC.r"
+        },
+        {
+            "type": "R-Debugger",
+            "name": "Bagging",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "bagging.r"
+        },
+        {
+            "type": "R-Debugger",
+            "name": "Simulation study",
+            "request": "launch",
+            "debugMode": "file",
+            "workingDirectory": "${workspaceFolder}",
+            "file": "simulation.r"
         },
         {
             "type": "R-Debugger",
