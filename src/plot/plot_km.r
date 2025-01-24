@@ -19,10 +19,10 @@ plot_km_curve <- function(dataset, group) {
         conf.int.style = "step",
         conf.int = FALSE,
         censor = FALSE,
-        title = "Post chemo -> Dead",
+        title = "Post chemo -> Relapse",
         legend = "bottom",
         legend.title = "",
-        legend.labs = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5", "Cluster 6")
+        legend.labs = c("Cluster 1", "Cluster 2", "Cluster 3")
     )
 
     print(survp)

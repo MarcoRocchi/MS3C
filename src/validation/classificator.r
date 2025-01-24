@@ -35,4 +35,6 @@ compute_classificator <- function(data, target, classes) {
     minimum_auc <- min(auc_values)
     cat(sprintf("\nAverage AUC: %f", average_auc))
     cat(sprintf("\nMinimum AUC: %f", minimum_auc))
+
+    return(average_auc)
 }
