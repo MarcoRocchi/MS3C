@@ -3,13 +3,11 @@ Sys.setenv(LANG = "en")
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model3.r")
+source("./src/models/model1.r")
 source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/validation/concordance.r")
 source("./src/validation/logrank.r")
-source("./src/validation/classificator.r")
-source("./src/plot/plot_km.r")
 
 library(mstate)
 library(dplyr)
@@ -19,7 +17,6 @@ dataset <- load_data()
 patients_count <- dataset$patients_count
 dataset <- preprocess(dataset)
 
-classification_dataset <- get_classification_features(dataset)
 mstate_dataset <- expand_dataset(dataset)
 dataset <- split_by_transition(mstate_dataset, patients_count)
 
@@ -42,10 +39,5 @@ clusters <- spectral_clustering(result$S, optimal_clusters_number)
 
 cat("\nComputing clustering logrank\n")
 print(logrank(mstate_dataset, clusters$group))
-
-cat("\nComputing classificator\n")
-compute_classificator(classification_dataset, clusters$group, optimal_clusters_number)
-
-plot_km_curve(dataset, clusters$group)
 
 cat("\nEnd")

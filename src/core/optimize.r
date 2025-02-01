@@ -4,6 +4,34 @@ source("./src/core/l1_projection.r")
 
 library(fastmatrix)
 
+#-------------
+library(ggplot2)
+
+plot_training_process <- function(likelihood_history) {
+    # Create a data frame for plotting
+    training_data <- data.frame(
+        Epoch = 1:length(likelihood_history),
+        Loss = likelihood_history
+    )
+    
+    # Plot the training process
+    plot <- ggplot(training_data, aes(x = Epoch, y = Loss)) +
+        geom_line(color = "blue", size = 1) +
+        #geom_point(color = "red", size = 2) +
+        ggtitle("Loss Function Over Epochs") +
+        xlab("Epoch") +
+        ylab("Loss") +
+        theme_minimal() +
+        theme(
+            plot.title = element_text(hjust = 0.5, size = 16),
+            axis.title = element_text(size = 14),
+            axis.text = element_text(size = 12)
+        )
+
+        print(plot)
+}
+#----------
+
 initialize_null <- function(data) {
     result <- list()    
 
@@ -81,7 +109,7 @@ optimize <- function(data, n, eta, gamma, mu, k) {
         }
 
         list[gws, likelihood_cox] <- evaluate_gradient(data, ws)
-                
+
         graph <- estimate_similarity(data, n, ws, mu, k)
 
         hy <- gamma * mu
@@ -93,7 +121,7 @@ optimize <- function(data, n, eta, gamma, mu, k) {
         }
 
         list[wzp, tau, likelihood] <- inner_loop(data, ws, gws, eta, tau, tau_inc, likelihood_cox)        
-
+        
         for (i in 1:length(data)) {
             wz_old[[i]] <- wz[[i]]
             wz[[i]] <- wzp[[i]]$z
@@ -117,5 +145,6 @@ optimize <- function(data, n, eta, gamma, mu, k) {
         t <- 1 + sqrt(1 + 4 * t^2)
     }
 
+    #plot_training_process(likelihood_history)
     return(list(weights = best_wzp, likelihood_history = likelihood_history, S = best_graph$S, L = best_graph$L))
 }

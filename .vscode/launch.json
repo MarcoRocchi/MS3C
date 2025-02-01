@@ -46,19 +46,11 @@
         },
         {
             "type": "R-Debugger",
-            "name": "Bagging",
-            "request": "launch",
-            "debugMode": "file",
-            "workingDirectory": "${workspaceFolder}",
-            "file": "bagging.r"
-        },
-        {
-            "type": "R-Debugger",
             "name": "Simulation study",
             "request": "launch",
             "debugMode": "file",
             "workingDirectory": "${workspaceFolder}",
-            "file": "simulation.r"
+            "file": "simulation_study.r"
         },
         {
             "type": "R-Debugger",
