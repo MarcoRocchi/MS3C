@@ -3,7 +3,7 @@ library(survminer)
 library(ggsurvfit)
 
 plot_km_curve <- function(dataset, group) {
-    d <- dataset[[5]]
+    d <- dataset[[2]]
 
     order <- d$patients
     features <- d$features[order, ]
@@ -23,10 +23,7 @@ plot_km_curve <- function(dataset, group) {
         title = "Relapse -> Dead",
         legend = "bottom",
         legend.title = "",
-        legend.labs = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5",
-                        "Cluster 6", "Cluster 7", "Cluster 8", "Cluster 9", "Cluster 10",
-                        "Cluster 11", "Cluster 12", "Cluster 13", "Cluster 14", "Cluster 15"
-        )
+        legend.labs = c("Cluster 1", "Cluster 2", "Cluster 3")
     )
 
     print(survp)

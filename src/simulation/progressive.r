@@ -63,7 +63,7 @@ build_model <- function(dataset) {
         t2_1.2 + t2_2.2 + t2_3.2 + t2_4.2 + t2_5.2 + t2_6.2 + t2_7.2 + t2_8.2 + t2_9.2 + t2_10.2 +
         strata(trans),
         data = data_long)
-    
+
     print(cox.zph(model))
 
     print(summary(model))
@@ -75,8 +75,9 @@ generate_sample_data <- function(n,
                                 time_params = list(mean1, sd1, mean2, sd2), 
                                 haz_params = list(mean1, sd1, mean2, sd2), 
                                 censor_params = list(p1, p2),
-                                covariates_params = list(mean1, sd1, mean2, sd2)) {
-    set.seed(123)
+                                covariates_params = list(mean1, sd1, mean2, sd2),
+                                categorical_params = list(p1, p2)) {
+    #set.seed(123)
     tmat <- get_tmat()
     
     time1 <- sort(abs(rnorm(n, mean = time_params$mean1, sd = time_params$sd1)))
@@ -100,19 +101,37 @@ generate_sample_data <- function(n,
     
     colnames(sample_data)[colnames(sample_data) == "duration"] <- "time"
     
-    t1 <- matrix(rnorm(n * 10, mean = covariates_params$mean1, sd = covariates_params$sd1), n, 10)
-    t2 <- matrix(rnorm(n * 10, mean = covariates_params$mean2, sd = covariates_params$sd2), n, 10)
-    
-    t1 <- scale(t1)
-    t2 <- scale(t2)
+    t1 <- matrix(sample(letters[1:5], n * 5, replace = TRUE, prob = categorical_params$p1), n, 5)
+    t2 <- matrix(sample(letters[1:5], n * 5, replace = TRUE, prob = categorical_params$p2), n, 5)
+
+    for (j in 1:5) {
+        random_vars <- runif(5)
+        for (i in 1:5) {
+            t1[t1[, j] == letters[i], j] <- random_vars[i]
+            t2[t2[, j] == letters[i], j] <- random_vars[i]
+        }
+    }
+
+    t1 <- matrix(as.numeric(t1), n, 5)
+    t2 <- matrix(as.numeric(t2), n, 5)
 
     for (i in 1:n) {
-        sample_data[sample_data$id == i, paste0("t1_", 1:10)] <- 
-            matrix(rep(t(t1[i, ]), each = sum(sample_data$id == i)), ncol = 10, byrow = FALSE)
-        sample_data[sample_data$id == i, paste0("t2_", 1:10)] <- 
-            matrix(rep(t(t2[i, ]), each = sum(sample_data$id == i)), ncol = 10, byrow = FALSE)
+        sample_data[sample_data$id == i, paste0("t1_", 1:5)] <- 
+            matrix(rep(t(t1[i, ]), each = sum(sample_data$id == i)), ncol = 5, byrow = FALSE)
+        sample_data[sample_data$id == i, paste0("t2_", 1:5)] <- 
+            matrix(rep(t(t2[i, ]), each = sum(sample_data$id == i)), ncol = 5, byrow = FALSE)
     }
     
+    t1 <- matrix(rnorm(n * 5, mean = covariates_params$mean1, sd = covariates_params$sd1), n, 5)
+    t2 <- matrix(rnorm(n * 5, mean = covariates_params$mean2, sd = covariates_params$sd2), n, 5)
+
+    for (i in 1:n) {
+        sample_data[sample_data$id == i, paste0("t1_", 6:10)] <- 
+            matrix(rep(t(t1[i, ]), each = sum(sample_data$id == i)), ncol = 5, byrow = FALSE)
+        sample_data[sample_data$id == i, paste0("t2_", 6:10)] <- 
+            matrix(rep(t(t2[i, ]), each = sum(sample_data$id == i)), ncol = 5, byrow = FALSE)
+    }
+
     cens1 <- runif(n, 0, 1) < censor_params$p1
     cens2 <- runif(n, 0, 1) < censor_params$p2
     

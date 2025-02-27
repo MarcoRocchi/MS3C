@@ -107,5 +107,10 @@ build_model <- function(dataset) {
 
     print(summary(model))
 
+    data_long$strata <- data_long$trans
+
+    nd <- data_long[1:2, ]
+    res <- msfit(model, nd, TRUE, "aalen", get_tmat())
+
     return(model)
 }
