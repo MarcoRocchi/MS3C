@@ -10,6 +10,8 @@ plot_km_curve <- function(dataset, group) {
     times <- d$times[order]
     status <- d$censoring[order]
 
+    legend_labels <- paste("Cluster", seq_len(length(unique(group))))
+
     model <- survfit(Surv(times, status) ~ group, data = as.data.frame(cbind(features, group)))
     survp <- ggsurvplot(
         model, 
@@ -23,7 +25,7 @@ plot_km_curve <- function(dataset, group) {
         title = "Relapse -> Dead",
         legend = "bottom",
         legend.title = "",
-        legend.labs = c("Cluster 1", "Cluster 2", "Cluster 3")
+        legend.labs = legend_labels
     )
 
     print(survp)

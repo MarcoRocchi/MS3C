@@ -3,8 +3,6 @@ source("./src/core/similarity.r")
 source("./src/core/l1_projection.r")
 
 library(fastmatrix)
-
-#-------------
 library(ggplot2)
 
 plot_training_process <- function(likelihood_history) {
@@ -17,7 +15,6 @@ plot_training_process <- function(likelihood_history) {
     # Plot the training process
     plot <- ggplot(training_data, aes(x = Epoch, y = Loss)) +
         geom_line(color = "blue", size = 1) +
-        #geom_point(color = "red", size = 2) +
         ggtitle("Loss Function Over Epochs") +
         xlab("Epoch") +
         ylab("Loss") +
@@ -30,7 +27,6 @@ plot_training_process <- function(likelihood_history) {
 
         print(plot)
 }
-#----------
 
 initialize_null <- function(data) {
     result <- list()    
@@ -116,7 +112,9 @@ optimize <- function(data, n, eta, gamma, mu, k) {
 
         for (i in 1:length(data)) {
             features <- data[[i]]$features[data[[i]]$patients, ]
-            transition_weight <- data[[i]]$transition_weight
+            variance <- compute_variance(wz[[i]], features, data[[i]]$time, 1 - data[[i]]$censoring)
+            transition_weight <- 1 / variance
+            data[[i]]$transition_weight <- transition_weight
             gws[[i]] <- gws[[i]] + hy * transition_weight * crossprod(features, graph$L) %*% (features %*% ws[[i]])
         }
 

@@ -8,6 +8,7 @@ source("./src/clustering/spectral_clustering.r")
 source("./src/validation/concordance.r")
 source("./src/validation/logrank.r")
 source("./src/validation/classificator.r")
+source("./src/plot/plot_km.r")
 
 library(dplyr)
 library(gsubfn)
@@ -104,14 +105,16 @@ result <- optimize(dataset, patients_count, e_opt, g_opt, m_opt, k_opt)
 cat("\nConcordance:", concordance_index(dataset, result$weights, patients_count))
 
 cat("\nPerforming spectral clustering")
-optimal_clusters_number <- sum(eigen(result$L, only.values = TRUE)$values < 1e-10)
+optimal_clusters_number <- sum(eigen(result$L, only.values = TRUE)$values < 1e-20)
 cat(sprintf("\nOptimal clusters number: %d", optimal_clusters_number))
-clusters <- spectral_clustering(result$S, 2)
+clusters <- spectral_clustering(result$S, optimal_clusters_number)
 
 true_label <- as.numeric(true_label)
 clusters$group <- as.numeric(clusters$group)
 assignment <- solve_LSAP(table(true_label, clusters$group), maximum = TRUE)
 optimal_clusters <- clusters$group
+
+plot_km_curve(dataset, clusters$group)
 
 for (i in 1:2) {
     correct <- sum(true_label == i & clusters$group == assignment[i])

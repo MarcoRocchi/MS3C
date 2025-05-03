@@ -10,6 +10,7 @@ source("./src/validation/concordance.r")
 source("./src/validation/agreement.r")
 source("./src/validation/logrank.r")
 source("./src/plot/plot_km.r")
+source("./src/validation/classifier.r")
 
 library(mstate)
 library(dplyr)
@@ -45,12 +46,10 @@ print(logrank(mstate_dataset, clusters$group))
 
 plot_km_curve(dataset, clusters$group)
 
-cat("\nClustering agreement:\n")
-print(compute_survival_cindex(dataset[[4]]$times, dataset[[4]]$censoring, clusters$group))
+compute_classifier(classification_dataset, clusters$group)
+
+#TODO
+#cat("\nClustering agreement:\n")
+#print(compute_survival_cindex(dataset[[4]]$times, dataset[[4]]$censoring, clusters$group))
 
 cat("\nEnd")
-
-
-source("./src/validation/classificator.r")
-compute_classificator(classification_dataset, clusters$group)
-

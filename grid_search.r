@@ -3,11 +3,11 @@ Sys.setenv(LANG = "en")
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model1.r")
+source("./src/models/model4.r")
 source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/validation/logrank.r")
-source("./src/validation/classificator.r")
+source("./src/validation/concordance.r")
 
 library(mstate)
 library(dplyr)
@@ -47,17 +47,13 @@ for (e in candidate_eta) {
             for (m in candidate_mu) {
                 result <- optimize(dataset, patients_count, e, g, m, k)
                 optimal_clusters_number <- sum(eigen(result$L, only.values = TRUE)$values < 1e-10)
-                if (optimal_clusters_number > 1) {
+                if (optimal_clusters_number > 1 && optimal_clusters_number <= 5) {
                     clusters <- spectral_clustering(result$S, optimal_clusters_number)
                     current_lr <- logrank(mstate_dataset, clusters$group)[["logtest"]]["pvalue"]
                     if (current_lr <= 0.05) {
-                        current_auc <- compute_classificator(
-                            classification_dataset, 
-                            clusters$group, 
-                            optimal_clusters_number
-                        )
-                        if (current_auc > maximum_value) {
-                            maximum_value <- current_auc
+                        current_c <- concordance_index(dataset, result$weights, patients_count)
+                        if (current_c > maximum_value) {
+                            maximum_value <- current_c
                             e_opt <- e
                             g_opt <- g
                             m_opt <- m

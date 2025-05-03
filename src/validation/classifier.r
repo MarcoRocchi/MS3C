@@ -1,7 +1,7 @@
 library(caret)
 library(pROC)
 
-compute_classificator <- function(data, target) {
+compute_classifier <- function(data, target) {
     labels <- factor(make.names(target))
 
     data <- data.frame(data, label = labels)

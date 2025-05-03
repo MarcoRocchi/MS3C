@@ -47,3 +47,31 @@ evaluate_gradient <- function(data, w) {
 
     return(list(gradient = gradient, likelihood = likelihood))
 }
+
+compute_variance <- function(wzp, X, time, status) {
+    if (all(wzp == 0)) {
+        return(1)
+    }
+
+    n <- nrow(X)
+    p <- ncol(X)
+    eta <- as.vector(X %*% wzp)
+    eta <- eta - max(eta)
+    exp_eta <- exp(eta)
+    info <- matrix(0, p, p)
+    
+    for (i in 1:n) {
+        if (status[i] == 1) {
+            risk_set <- which(time >= time[i])
+            S0 <- sum(exp_eta[risk_set])
+            S1 <- colSums(X[risk_set, , drop = FALSE] * exp_eta[risk_set])
+            S2 <- t(X[risk_set, , drop = FALSE]) %*% (X[risk_set, , drop = FALSE] * exp_eta[risk_set])
+            info <- info + (S2 / S0) - (S1 %*% t(S1)) / (S0^2)
+        }
+    }
+    info <- info + diag(ncol(info)) 
+    inv_info <- solve(info)    
+    variances <- diag(inv_info)    
+    avg_variance <- mean(variances)
+    return(avg_variance)
+}
