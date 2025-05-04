@@ -73,7 +73,7 @@ inner_loop <- function(data, ws, gws, eta, tau, tau_inc, likelihood_cox) {
     return(list(wzp, tau, likelihood))
 }
 
-optimize <- function(data, n, eta, gamma, mu, k) {
+optimize <- function(data, n, eta, gamma, mu, k, use_inverse_variance = TRUE) {
     wz <- initialize_null(data)
     wz_old <- initialize_null(data)
     ws <- initialize_null(data)
@@ -112,9 +112,15 @@ optimize <- function(data, n, eta, gamma, mu, k) {
 
         for (i in 1:length(data)) {
             features <- data[[i]]$features[data[[i]]$patients, ]
-            variance <- compute_variance(wz[[i]], features, data[[i]]$time, 1 - data[[i]]$censoring)
-            transition_weight <- 1 / variance
-            data[[i]]$transition_weight <- transition_weight
+            
+            if (use_inverse_variance) {
+                variance <- compute_variance(wz[[i]], features, data[[i]]$time, 1 - data[[i]]$censoring)
+                transition_weight <- 1 / variance
+                data[[i]]$transition_weight <- transition_weight
+            } else {
+                transition_weight <- data[[i]]$transition_weight
+            }            
+            
             gws[[i]] <- gws[[i]] + hy * transition_weight * crossprod(features, graph$L) %*% (features %*% ws[[i]])
         }
 
