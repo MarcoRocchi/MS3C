@@ -1,12 +1,17 @@
 Sys.setenv(LANG = "en")
 
+# -------------- SETTINGS --------------
+finetune <- TRUE
+source("./src/models/model2.r")
+# --------------------------------------
+
 source("./src/data/load_data.r")
 source("./src/data/preprocessing.r")
 source("./src/data/prepare_data.r")
-source("./src/models/model3.r")
 source("./src/core/optimize.r")
 source("./src/clustering/spectral_clustering.r")
 source("./src/validation/concordance.r")
+source("./src/finetuning/grid_search.r")
 source("./src/validation/agreement.r")
 source("./src/validation/logrank.r")
 source("./src/plot/plot_km.r")
@@ -32,14 +37,20 @@ for (d in dataset) {
 }
 
 cat("\nBuilding similarity graph")
-list[eta, gamma, mu, k] <- get_optimal_parameters()
+
+if (finetune) {
+    list[eta, gamma, mu, k] <- grid_search(dataset, patients_count, verbose = TRUE)
+} else {
+    list[eta, gamma, mu, k] <- get_optimal_parameters()
+}
+
 result <- optimize(dataset, patients_count, eta, gamma, mu, k)
 cat("\nConcordance:", concordance_index(dataset, result$weights, patients_count))
 
 cat("\nPerforming spectral clustering")
 optimal_clusters_number <- sum(eigen(result$L, only.values = TRUE)$values < 1e-10)
 cat(sprintf("\nOptimal clusters number: %d", optimal_clusters_number))
-clusters <- spectral_clustering(result$S, optimal_clusters_number)
+clusters <- spectral_clustering(result$S, 2)
 
 cat("\nComputing clustering logrank\n")
 print(logrank(mstate_dataset, clusters$group))

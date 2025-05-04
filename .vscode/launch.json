@@ -6,19 +6,11 @@
   "configurations": [
     {
       "type": "R-Debugger",
-      "name": "MSM S2GC",
+      "name": "MS3C",
       "request": "launch",
       "debugMode": "file",
       "workingDirectory": "${workspaceFolder}",
       "file": "main.r"
-    },
-    {
-      "type": "R-Debugger",
-      "name": "Grid search",
-      "request": "launch",
-      "debugMode": "file",
-      "workingDirectory": "${workspaceFolder}",
-      "file": "grid_search.r"
     },
     {
       "type": "R-Debugger",
